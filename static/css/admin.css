@@ -1,0 +1,713 @@
+/* =========================================================
+   ADMIN USER MANAGEMENT
+   ========================================================= */
+
+.admin-user-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    margin-bottom: 14px;
+
+    border: 1px solid var(--line);
+    border-radius: 10px;
+
+    background: var(--surface);
+
+    overflow: hidden;
+}
+
+
+.admin-user-summary > div {
+    padding: 14px 16px;
+
+    border-right:
+        1px solid
+        var(--line-soft);
+}
+
+
+.admin-user-summary > div:last-child {
+    border-right: 0;
+}
+
+
+.admin-user-summary span {
+    display: block;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: .09em;
+}
+
+
+.admin-user-summary strong {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #d7e0e3;
+
+    font-size: 20px;
+}
+
+
+/* SEARCH */
+
+.admin-user-search-panel {
+    margin-bottom: 14px;
+}
+
+
+.admin-user-search {
+    display: flex;
+
+    gap: 8px;
+
+    padding: 12px;
+}
+
+
+.admin-user-search input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 38px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #0e1417;
+
+    color: var(--text);
+
+    font-size: 11px;
+}
+
+
+.admin-user-search input:focus {
+    border-color: #3a6264;
+}
+
+
+/* TABLE */
+
+.admin-users-table {
+    min-width: 900px;
+}
+
+
+.admin-user-identity {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.admin-user-avatar {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 1px solid #315154;
+    border-radius: 50%;
+
+    background: #102124;
+
+    color: #b7e0df;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+
+.admin-user-identity strong {
+    display: block;
+
+    color: #d5dfe2;
+
+    font-size: 10px;
+}
+
+
+.admin-user-identity small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+}
+
+
+/* ROLE BADGES */
+
+.admin-role-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 23px;
+
+    padding: 0 8px;
+
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: .05em;
+}
+
+
+.admin-role-badge.admin {
+    border: 1px solid #315347;
+
+    background: #102019;
+
+    color: #8ec7a8;
+}
+
+
+.admin-role-badge.analyst {
+    border: 1px solid #394a54;
+
+    background: #121a1e;
+
+    color: #9dacb3;
+}
+
+
+/* ROLE CONTROL */
+
+.admin-role-form {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.admin-role-form select {
+    height: 34px;
+
+    padding: 0 28px 0 9px;
+
+    border: 1px solid var(--line);
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #0e1417;
+
+    color: #b6c1c6;
+
+    font-size: 10px;
+}
+
+
+.admin-role-form .primary-btn {
+    min-height: 34px;
+}
+
+
+.admin-self-lock {
+    color: #687980;
+
+    font-size: 9px;
+}
+
+
+@media (max-width: 860px) {
+
+    .admin-user-summary {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .admin-user-summary > div:nth-child(2) {
+        border-right: 0;
+    }
+
+
+    .admin-user-summary > div:nth-child(-n+2) {
+        border-bottom:
+            1px solid
+            var(--line-soft);
+    }
+
+}
+
+
+@media (max-width: 620px) {
+
+    .admin-user-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .admin-user-summary > div {
+        border-right: 0;
+
+        border-bottom:
+            1px solid
+            var(--line-soft);
+    }
+
+
+    .admin-user-summary > div:last-child {
+        border-bottom: 0;
+    }
+
+
+    .admin-user-search {
+        flex-direction: column;
+    }
+
+
+    .admin-user-search .primary-btn,
+    .admin-user-search .ghost-btn {
+        width: 100%;
+    }
+
+}
+/* =========================================================
+   ADMIN TELEMETRY MANAGEMENT
+   ========================================================= */
+
+.admin-telemetry-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    margin-bottom: 14px;
+
+    border: 1px solid var(--line);
+    border-radius: 10px;
+
+    background: var(--surface);
+
+    overflow: hidden;
+}
+
+
+.admin-telemetry-summary > div {
+    padding: 14px 16px;
+
+    border-right:
+        1px solid
+        var(--line-soft);
+}
+
+
+.admin-telemetry-summary > div:last-child {
+    border-right: 0;
+}
+
+
+.admin-telemetry-summary span {
+    display: block;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .09em;
+}
+
+
+.admin-telemetry-summary strong {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #d7e0e3;
+
+    font-size: 20px;
+}
+
+
+/* SEARCH */
+
+.admin-telemetry-search-panel {
+    margin-bottom: 14px;
+}
+
+
+.admin-telemetry-search {
+    display: flex;
+
+    gap: 8px;
+
+    padding: 12px;
+}
+
+
+.admin-telemetry-search input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 38px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--line);
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #0e1417;
+
+    color: var(--text);
+
+    font-size: 11px;
+}
+
+
+.admin-telemetry-search input:focus {
+    border-color: #3a6264;
+}
+
+
+/* TABLE */
+
+.admin-telemetry-table {
+    min-width: 1150px;
+}
+
+
+.admin-dataset-name strong {
+    display: block;
+
+    color: #d5dfe2;
+
+    font-size: 10px;
+}
+
+
+.admin-dataset-name small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+}
+
+
+.admin-file-type {
+    display: inline-flex;
+
+    padding: 4px 7px;
+
+    border: 1px solid #29474b;
+    border-radius: 5px;
+
+    background: #102024;
+
+    color: #8bbabb;
+
+    font-family: Consolas, monospace;
+
+    font-size: 8px;
+}
+
+
+.admin-data-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 23px;
+
+    padding: 0 8px;
+
+    border-radius: 999px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: .05em;
+}
+
+
+.admin-data-status.ready {
+    border: 1px solid #315347;
+
+    background: #102019;
+
+    color: #8ec7a8;
+}
+
+
+.admin-data-status.failed {
+    border: 1px solid #54353c;
+
+    background: #1c1215;
+
+    color: #d998a1;
+}
+
+
+.admin-data-status.pending {
+    border: 1px solid #394a54;
+
+    background: #121a1e;
+
+    color: #9dacb3;
+}
+
+
+.admin-upload-time {
+    color: #7f9097;
+
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size: 9px;
+
+    white-space: nowrap;
+}
+
+
+@media (max-width: 860px) {
+
+    .admin-telemetry-summary {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+
+    .admin-telemetry-summary > div:nth-child(2) {
+        border-right: 0;
+    }
+
+
+    .admin-telemetry-summary > div:nth-child(-n+2) {
+        border-bottom:
+            1px solid
+            var(--line-soft);
+    }
+
+}
+
+
+@media (max-width: 620px) {
+
+    .admin-telemetry-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .admin-telemetry-summary > div {
+        border-right: 0;
+
+        border-bottom:
+            1px solid
+            var(--line-soft);
+    }
+
+
+    .admin-telemetry-summary > div:last-child {
+        border-bottom: 0;
+    }
+
+
+    .admin-telemetry-search {
+        flex-direction: column;
+    }
+
+
+    .admin-telemetry-search .primary-btn,
+    .admin-telemetry-search .ghost-btn {
+        width: 100%;
+    }
+
+}
+/* =========================================================
+   DESTRUCTIVE ADMIN ACTIONS
+   ========================================================= */
+
+.danger-btn {
+    min-height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 12px;
+
+    border: 1px solid #653c43;
+    border-radius: 8px;
+
+    background: #251518;
+
+    color: #e09aa3;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.danger-btn:hover {
+    background: #31191d;
+    border-color: #7a454e;
+}
+
+
+.admin-delete-confirm {
+    padding: 18px;
+}
+
+
+.admin-delete-warning {
+    padding: 14px;
+
+    margin-bottom: 18px;
+
+    border: 1px solid #54353c;
+    border-radius: 8px;
+
+    background: #1c1215;
+}
+
+
+.admin-delete-warning strong {
+    color: #dda0a8;
+
+    font-size: 11px;
+}
+
+
+.admin-delete-warning p {
+    margin: 6px 0 0;
+
+    color: #9c777c;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+.admin-delete-details {
+    display: grid;
+
+    grid-template-columns:
+        130px 1fr;
+
+    gap: 9px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom:
+        1px solid
+        var(--line-soft);
+}
+
+
+.admin-delete-details span {
+    color: var(--muted-2);
+
+    font-size: 9px;
+}
+
+
+.admin-delete-details strong {
+    color: #c6d0d4;
+
+    font-size: 10px;
+
+    word-break: break-word;
+}
+
+
+.admin-delete-form label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #8f9da5;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+.admin-delete-form label strong {
+    color: #d6a0a7;
+}
+
+
+.admin-delete-form input {
+    width: 100%;
+
+    height: 38px;
+
+    padding: 0 11px;
+
+    border: 1px solid #54353c;
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #0e1417;
+
+    color: var(--text);
+}
+
+
+.admin-delete-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 14px;
+}

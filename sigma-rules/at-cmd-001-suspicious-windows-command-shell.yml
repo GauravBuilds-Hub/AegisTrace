@@ -1,0 +1,16 @@
+title: Suspicious Windows Command Shell
+id: AT-CMD-001
+status: experimental
+description: AegisTrace academic detection specification for Suspicious Windows Command Shell.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    Image|endswith: '\\cmd.exe'
+    CommandLine|contains: ['powershell', 'certutil', 'bitsadmin', 'curl ', 'wget ', 'whoami', 'net user']
+  condition: selection
+level: medium
+tags:
+  - attack.t1059.003

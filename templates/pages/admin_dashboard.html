@@ -1,0 +1,493 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Administration | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            ADMINISTRATION / DASHBOARD
+        </small>
+
+        <h1>
+            Administration
+        </h1>
+
+        <p>
+            Administrative overview of AegisTrace users,
+            uploaded telemetry and stored security data.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ADMIN METRICS
+     ===================================================== -->
+
+<section class="posture-strip">
+
+
+    <div>
+
+        <span>
+            Total Users
+        </span>
+
+        <strong>
+            {{ total_users }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Admin Users
+        </span>
+
+        <strong>
+            {{ admin_users }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Uploaded Datasets
+        </span>
+
+        <strong>
+            {{ total_uploads }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Stored Events
+        </span>
+
+        <strong>
+            {{ total_events }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            Detections
+        </span>
+
+        <strong>
+            {{ total_detections }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            IOCs
+        </span>
+
+        <strong>
+            {{ total_iocs }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     ADMIN PANELS
+     ===================================================== -->
+
+<section class="overview-grid">
+
+
+    <!-- RECENT USERS -->
+
+    <section class="panel">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    ACCOUNT MANAGEMENT
+                </small>
+
+                <h2>
+                    Recent Users
+                </h2>
+
+            </div>
+
+            <span class="panel-meta">
+                Latest 5 accounts
+            </span>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% if recent_users %}
+
+
+                        {% for user in recent_users %}
+
+                        <tr>
+
+                            <td>
+                                #{{ user["id"] }}
+                            </td>
+
+                            <td>
+                                {{ user["full_name"] }}
+                            </td>
+
+                            <td>
+                                {{ user["email"] }}
+                            </td>
+
+                            <td>
+
+                                {% if user["role"] == "Admin" %}
+
+                                <span class="status-badge neutral">
+                                    ADMIN
+                                </span>
+
+                                {% else %}
+
+                                <span class="status-badge neutral">
+                                    ANALYST
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+
+                        <tr class="empty-row">
+
+                            <td colspan="4">
+                                No user accounts found.
+                            </td>
+
+                        </tr>
+
+
+                    {% endif %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ADMIN STATUS -->
+
+    <section class="panel">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    ADMINISTRATION
+                </small>
+
+                <h2>
+                    Management Status
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="readiness-list">
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    Admin access protection
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    User management
+                </b>
+
+                <small>
+                    Next
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Telemetry management
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Audit history
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- RECENT DATASETS -->
+
+    <section class="panel activity-feed">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    TELEMETRY MANAGEMENT
+                </small>
+
+                <h2>
+                    Recent Uploaded Datasets
+                </h2>
+
+            </div>
+
+            <span class="panel-meta">
+                Latest 5 uploads
+            </span>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Dataset
+                        </th>
+
+                        <th>
+                            Uploaded By
+                        </th>
+
+                        <th>
+                            Events
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Uploaded
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% if recent_uploads %}
+
+
+                        {% for upload in recent_uploads %}
+
+                        <tr>
+
+                            <td>
+                                #{{ upload["id"] }}
+                            </td>
+
+                            <td>
+                                {{ upload["original_name"] }}
+                            </td>
+
+                            <td>
+                                {{ upload["uploaded_by"] or "—" }}
+                            </td>
+
+                            <td>
+                                {{ upload["event_count"] or 0 }}
+                            </td>
+
+                            <td>
+
+                                <span class="status-badge neutral">
+
+                                    {{ upload["status"] }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+                                {{ upload["uploaded_at"] or "—" }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+
+                        <tr class="empty-row">
+
+                            <td colspan="6">
+
+                                No telemetry datasets
+                                have been uploaded yet.
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endif %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </section>
+
+
+</section>
+
+
+{% endblock %}

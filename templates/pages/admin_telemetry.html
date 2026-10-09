@@ -1,0 +1,542 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Telemetry Management | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            ADMINISTRATION / TELEMETRY MANAGEMENT
+        </small>
+
+        <h1>
+            Telemetry Management
+        </h1>
+
+        <p>
+            Review uploaded datasets and the events,
+            detections and indicators generated from them.
+        </p>
+
+    </div>
+
+    <div class="workspace-actions">
+        <a href="{{ url_for('admin_purge_telemetry') }}" class="danger-btn">Purge Telemetry</a>
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FLASH MESSAGES
+     ===================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+        <div
+            class="module-alert
+            {% if category == 'success' %}
+            module-alert-success
+            {% else %}
+            module-alert-error
+            {% endif %}"
+        >
+
+            <div class="module-alert-icon">
+
+                {% if category == "success" %}
+                ✓
+                {% else %}
+                !
+                {% endif %}
+
+            </div>
+
+
+            <div class="module-alert-text">
+
+                <strong>
+
+                    {% if category == "success" %}
+                    Action completed
+                    {% else %}
+                    Action failed
+                    {% endif %}
+
+                </strong>
+
+                <span>
+                    {{ message }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+
+<!-- =====================================================
+     SUMMARY
+     ===================================================== -->
+
+<section class="admin-telemetry-summary">
+
+
+    <div>
+
+        <span>
+            DATASETS
+        </span>
+
+        <strong>
+            {{ total_uploads }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            EVENTS
+        </span>
+
+        <strong>
+            {{ total_events }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            DETECTIONS
+        </span>
+
+        <strong>
+            {{ total_detections }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            IOCS
+        </span>
+
+        <strong>
+            {{ total_iocs }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel admin-telemetry-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('admin_telemetry') }}"
+        class="admin-telemetry-search"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search dataset, uploader, file type or status..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Datasets
+        </button>
+
+
+        {% if search %}
+
+        <a
+            href="{{ url_for('admin_telemetry') }}"
+            class="ghost-btn"
+        >
+            Clear
+        </a>
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     DATASET TABLE
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+            <small>
+                TELEMETRY DATASETS
+            </small>
+
+            <h2>
+                Uploaded Data
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            {{ uploads | length }} dataset(s)
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="admin-telemetry-table">
+
+
+            <thead>
+
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        Dataset
+                    </th>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Uploaded By
+                    </th>
+
+                    <th>
+                        Events
+                    </th>
+
+                    <th>
+                        Detections
+                    </th>
+
+                    <th>
+                        IOCs
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Uploaded
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if uploads %}
+
+
+                    {% for upload in uploads %}
+
+
+                    <tr>
+
+
+                        <!-- ID -->
+
+                        <td>
+                            #{{ upload["id"] }}
+                        </td>
+
+
+
+                        <!-- DATASET -->
+
+                        <td>
+
+                            <div class="admin-dataset-name">
+
+                                <strong>
+
+                                    {{ upload["original_name"] }}
+
+                                </strong>
+
+
+                                <small>
+
+                                    {{ upload["file_size"] or 0 }}
+                                    bytes
+
+                                </small>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- FILE TYPE -->
+
+                        <td>
+
+                            <span class="admin-file-type">
+
+                                {{ upload["file_type"] or "—" }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- UPLOADED BY -->
+
+                        <td>
+
+                            {{ upload["uploaded_by"] or "—" }}
+
+                        </td>
+
+
+
+                        <!-- EVENTS -->
+
+                        <td>
+
+                            {{ upload["stored_events"] or 0 }}
+
+                        </td>
+
+
+
+                        <!-- DETECTIONS -->
+
+                        <td>
+
+                            {{ upload["detection_count"] or 0 }}
+
+                        </td>
+
+
+
+                        <!-- IOCS -->
+
+                        <td>
+
+                            {{ upload["ioc_count"] or 0 }}
+
+                        </td>
+
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            {% if
+                                upload["status"] == "Parsed"
+                                and
+                                upload["normalization_status"] == "Normalized"
+                            %}
+
+
+                            <span class="admin-data-status ready">
+
+                                READY
+
+                            </span>
+
+
+                            {% elif
+                                upload["status"] == "Parse Failed"
+                                or
+                                upload["normalization_status"] == "Failed"
+                            %}
+
+
+                            <span class="admin-data-status failed">
+
+                                FAILED
+
+                            </span>
+
+
+                            {% else %}
+
+
+                            <span class="admin-data-status pending">
+
+                                {{ upload["status"] or "UNKNOWN" }}
+
+                            </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <!-- UPLOADED TIME -->
+
+                        <td>
+
+                            <span class="admin-upload-time">
+
+                                {{ upload["uploaded_at"] or "—" }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- ACTIONS -->
+
+                        <td>
+
+                            <a
+                                href="{{ url_for(
+                                    'admin_delete_dataset',
+                                    upload_id=upload['id']
+                                ) }}"
+                                class="danger-btn"
+                            >
+                                Delete
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr class="empty-row">
+
+
+                    <td colspan="10">
+
+
+                        {% if search %}
+
+
+                        No telemetry datasets matched
+
+                        <strong>
+                            {{ search }}
+                        </strong>.
+
+
+                        {% else %}
+
+
+                        No telemetry datasets are stored.
+
+
+                        {% endif %}
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

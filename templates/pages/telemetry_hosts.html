@@ -1,0 +1,466 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Hosts | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="workspace-head">
+
+
+    <div>
+
+
+        <small>
+            TELEMETRY / HOSTS
+        </small>
+
+
+        <h1>
+            Hosts
+        </h1>
+
+
+        <p>
+
+            Systems discovered from normalized
+            security telemetry and their observed
+            activity inside AegisTrace.
+
+        </p>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     HOST SUMMARY
+     ===================================================== -->
+
+<section class="host-summary-grid">
+
+
+    <div class="host-summary-card">
+
+
+        <span>
+            UNIQUE HOSTS
+        </span>
+
+
+        <strong>
+            {{ total_hosts }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="host-summary-card">
+
+
+        <span>
+            HOST EVENTS
+        </span>
+
+
+        <strong>
+            {{ host_event_total }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="host-summary-card">
+
+
+        <span>
+            DISPLAYED
+        </span>
+
+
+        <strong>
+            {{ hosts | length }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="host-summary-card">
+
+
+        <span>
+            DATA SOURCE
+        </span>
+
+
+        <strong class="host-summary-text">
+            Event Database
+        </strong>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel host-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('telemetry_hosts') }}"
+        class="host-search-form"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search hostname..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Hosts
+        </button>
+
+
+
+        {% if search %}
+
+
+            <a
+                href="{{ url_for('telemetry_hosts') }}"
+                class="host-clear-button"
+            >
+                Clear
+            </a>
+
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     HOST TABLE
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+
+            <small>
+                ASSET DISCOVERY
+            </small>
+
+
+            <h2>
+                Discovered Hosts
+            </h2>
+
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Derived from normalized events
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="hosts-table">
+
+
+            <thead>
+
+
+                <tr>
+
+
+                    <th>Host</th>
+
+                    <th>Events</th>
+
+                    <th>Users</th>
+
+                    <th>Source IPs</th>
+
+                    <th>Detection State</th>
+
+                    <th>Last Seen</th>
+
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if hosts %}
+
+
+                    {% for host in hosts %}
+
+
+                        <tr>
+
+
+                            <td>
+
+
+                                <div class="host-identity">
+
+
+                                    <div class="host-device-icon">
+
+                                        HOST
+
+                                    </div>
+
+
+                                    <div class="host-details">
+
+
+                                        <strong>
+
+                                            {{ host["host_name"] }}
+
+                                        </strong>
+
+
+                                        <small>
+
+                                            Telemetry asset
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                <span class="host-number">
+
+                                    {{ host["event_count"] }}
+
+                                </span>
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                <span class="host-number">
+
+                                    {{ host["unique_users"] }}
+
+                                </span>
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                <span class="host-number">
+
+                                    {{ host["unique_source_ips"] }}
+
+                                </span>
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                {% if
+                                    host["detection_count"] > 0
+                                %}
+
+
+                                    <span class="host-risk alert">
+
+                                        {{ host["detection_count"] }}
+                                        DETECTION(S)
+
+                                    </span>
+
+
+                                {% else %}
+
+
+                                    <span class="host-risk clean">
+
+                                        NO DETECTIONS
+
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                <span class="host-last-seen">
+
+                                    {{ host["last_seen"] or "—" }}
+
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                    <tr>
+
+
+                        <td
+                            colspan="6"
+                            class="telemetry-empty-state"
+                        >
+
+
+                            {% if search %}
+
+
+                                <strong>
+
+                                    No host matched
+                                    "{{ search }}"
+
+                                </strong>
+
+
+                                <span>
+
+                                    Try another hostname.
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <strong>
+
+                                    No hosts discovered yet.
+
+                                </strong>
+
+
+                                <span>
+
+                                    Upload telemetry containing
+                                    Computer, Host or Hostname fields.
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

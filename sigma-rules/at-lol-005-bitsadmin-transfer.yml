@@ -1,0 +1,16 @@
+title: BITSAdmin Transfer
+id: AT-LOL-005
+status: experimental
+description: AegisTrace academic detection specification for BITSAdmin Transfer.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    Image|endswith: '\\bitsadmin.exe'
+    CommandLine|contains: ['/transfer', '/addfile', 'http://', 'https://']
+  condition: selection
+level: medium
+tags:
+  - attack.t1197

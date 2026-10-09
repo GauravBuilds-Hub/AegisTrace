@@ -1,0 +1,471 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+User Management | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            ADMINISTRATION / USER MANAGEMENT
+        </small>
+
+        <h1>
+            User Management
+        </h1>
+
+        <p>
+            Review AegisTrace accounts and manage
+            administrator and analyst access.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FLASH MESSAGES
+     ===================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+        <div
+            class="module-alert
+            {% if category == 'success' %}
+            module-alert-success
+            {% else %}
+            module-alert-error
+            {% endif %}"
+        >
+
+            <div class="module-alert-icon">
+
+                {% if category == "success" %}
+                ✓
+                {% else %}
+                !
+                {% endif %}
+
+            </div>
+
+            <div class="module-alert-text">
+
+                <strong>
+                    {% if category == "success" %}
+                    User updated
+                    {% else %}
+                    Action not completed
+                    {% endif %}
+                </strong>
+
+                <span>
+                    {{ message }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<!-- =====================================================
+     SUMMARY
+     ===================================================== -->
+
+<section class="admin-user-summary">
+
+
+    <div>
+
+        <span>
+            TOTAL USERS
+        </span>
+
+        <strong>
+            {{ total_users }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            ADMINISTRATORS
+        </span>
+
+        <strong>
+            {{ total_admins }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            ANALYSTS
+        </span>
+
+        <strong>
+            {{ total_analysts }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            DISPLAYED
+        </span>
+
+        <strong>
+            {{ users | length }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel admin-user-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('admin_users') }}"
+        class="admin-user-search"
+    >
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search name, email or role..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Users
+        </button>
+
+
+        {% if search %}
+
+        <a
+            href="{{ url_for('admin_users') }}"
+            class="ghost-btn"
+        >
+            Clear
+        </a>
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+<!-- =====================================================
+     USERS
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                ACCOUNT DIRECTORY
+            </small>
+
+            <h2>
+                AegisTrace Users
+            </h2>
+
+        </div>
+
+        <span class="panel-meta">
+            {{ users | length }} account(s)
+        </span>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+
+        <table class="admin-users-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Current Role
+                    </th>
+
+                    <th>
+                        Change Role
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% if users %}
+
+
+                    {% for user in users %}
+
+
+                    <tr>
+
+
+                        <td>
+                            #{{ user["id"] }}
+                        </td>
+
+
+                        <td>
+
+                            <div class="admin-user-identity">
+
+                                <div class="admin-user-avatar">
+
+                                    {{ user["full_name"][:2].upper() }}
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+
+                                        {{ user["full_name"] }}
+
+                                    </strong>
+
+
+                                    {% if user["id"] == current_user.id %}
+
+                                    <small>
+                                        Current account
+                                    </small>
+
+                                    {% else %}
+
+                                    <small>
+                                        AegisTrace user
+                                    </small>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ user["email"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if user["role"] == "Admin" %}
+
+                            <span class="admin-role-badge admin">
+
+                                ADMIN
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="admin-role-badge analyst">
+
+                                ANALYST
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if user["id"] == current_user.id %}
+
+                            <span class="admin-self-lock">
+                                Protected current admin
+                            </span>
+
+
+                            {% else %}
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'admin_update_user_role',
+                                    user_id=user['id']
+                                ) }}"
+                                class="admin-role-form"
+                            >
+
+
+                                <select
+                                    name="role"
+                                    aria-label="Select user role"
+                                >
+
+                                    <option
+                                        value="Analyst"
+                                        {% if user["role"] == "Analyst" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Analyst
+                                    </option>
+
+
+                                    <option
+                                        value="Admin"
+                                        {% if user["role"] == "Admin" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Admin
+                                    </option>
+
+                                </select>
+
+
+                                <button
+                                    type="submit"
+                                    class="primary-btn"
+                                >
+                                    Update
+                                </button>
+
+
+                            </form>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('admin_delete_user_data', user_id=user['id']) }}"
+                                onsubmit="return confirm('Delete all project data owned by this user while keeping the account?');"
+                                style="margin-top:8px"
+                            >
+                                <button type="submit" class="danger-btn">Delete User Data</button>
+                            </form>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr class="empty-row">
+
+                    <td colspan="5">
+
+                        {% if search %}
+
+                        No users matched
+                        <strong>
+                            {{ search }}
+                        </strong>.
+
+                        {% else %}
+
+                        No user accounts found.
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

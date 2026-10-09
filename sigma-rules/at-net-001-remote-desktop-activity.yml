@@ -1,0 +1,16 @@
+title: Remote Desktop Activity
+id: AT-NET-001
+status: experimental
+description: AegisTrace academic detection specification for Remote Desktop Activity.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    LogonType: 10
+  condition: selection
+level: medium
+tags:
+  - attack.t1021.001

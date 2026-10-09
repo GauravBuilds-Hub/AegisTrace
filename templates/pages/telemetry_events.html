@@ -1,0 +1,451 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Parsed Events | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="workspace-head">
+
+
+    <div>
+
+
+        <small>
+            TELEMETRY / PARSED EVENTS
+        </small>
+
+
+        <h1>
+            Parsed Events
+        </h1>
+
+
+        <p>
+
+            Normalized security events stored inside
+            the AegisTrace event database.
+
+        </p>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     EVENT SUMMARY
+     ===================================================== -->
+
+<section class="event-summary-grid">
+
+
+    <div class="event-summary-card">
+
+
+        <span>
+            TOTAL EVENTS
+        </span>
+
+
+        <strong>
+            {{ total_events }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="event-summary-card">
+
+
+        <span>
+            DISPLAYED
+        </span>
+
+
+        <strong>
+            {{ events | length }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="event-summary-card">
+
+
+        <span>
+            DATA SOURCE
+        </span>
+
+
+        <strong class="event-summary-text">
+            SQLite
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="event-summary-card">
+
+
+        <span>
+            SCHEMA
+        </span>
+
+
+        <strong class="event-summary-text">
+            Normalized
+        </strong>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel event-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('telemetry_events') }}"
+        class="event-search-form"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search event ID, host, user, IP, process, command line or source file..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Events
+        </button>
+
+
+
+        {% if search %}
+
+
+            <a
+                href="{{ url_for('telemetry_events') }}"
+                class="event-clear-button"
+            >
+                Clear
+            </a>
+
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     EVENTS
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+
+            <small>
+                EVENT DATABASE
+            </small>
+
+
+            <h2>
+                Normalized Security Events
+            </h2>
+
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Maximum 250 rows displayed
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="parsed-events-table">
+
+
+            <thead>
+
+
+                <tr>
+
+
+                    <th>ID</th>
+
+                    <th>Timestamp</th>
+
+                    <th>Event ID</th>
+
+                    <th>Host</th>
+
+                    <th>User</th>
+
+                    <th>Source IP</th>
+
+                    <th>Destination IP</th>
+
+                    <th>Process</th>
+
+                    <th>Command Line</th>
+
+                    <th>Event Type</th>
+
+                    <th>Source File</th>
+
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if events %}
+
+
+                    {% for event in events %}
+
+
+                        <tr>
+
+
+                            <td class="event-id-column">
+
+                                #{{ event["id"] }}
+
+                            </td>
+
+
+
+                            <td>
+
+                                {{ event["timestamp"] or "—" }}
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                {% if event["event_id"] %}
+
+
+                                    <span class="event-code">
+
+                                        {{ event["event_id"] }}
+
+                                    </span>
+
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <td>
+
+                                {{ event["host"] or "—" }}
+
+                            </td>
+
+
+
+                            <td>
+
+                                {{ event["username"] or "—" }}
+
+                            </td>
+
+
+
+                            <td class="event-network-value">
+
+                                {{ event["source_ip"] or "—" }}
+
+                            </td>
+
+
+
+                            <td class="event-network-value">
+
+                                {{ event["destination_ip"] or "—" }}
+
+                            </td>
+
+
+
+                            <td>
+
+                                {{ event["process_name"] or "—" }}
+
+                            </td>
+
+
+
+                            <td class="event-command-line">
+
+                                {{ event["command_line"] or "—" }}
+
+                            </td>
+
+
+
+                            <td>
+
+                                {{ event["event_type"] or "—" }}
+
+                            </td>
+
+
+
+                            <td class="event-source-file">
+
+                                {{ event["original_name"] or "—" }}
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                    <tr>
+
+
+                        <td
+                            colspan="11"
+                            class="telemetry-empty-state"
+                        >
+
+
+                            {% if search %}
+
+
+                                <strong>
+
+                                    No events matched
+                                    "{{ search }}"
+
+                                </strong>
+
+
+                                <span>
+
+                                    Try another hostname,
+                                    IP, user or event ID.
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <strong>
+
+                                    No normalized events stored yet.
+
+                                </strong>
+
+
+                                <span>
+
+                                    Upload a CSV or JSON telemetry
+                                    dataset to populate the event database.
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

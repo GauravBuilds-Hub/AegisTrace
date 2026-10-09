@@ -1,0 +1,194 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Delete Dataset | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            ADMINISTRATION / TELEMETRY MANAGEMENT
+        </small>
+
+        <h1>
+            Delete Dataset
+        </h1>
+
+        <p>
+            Permanently remove this telemetry dataset
+            and all security data generated from it.
+        </p>
+
+    </div>
+
+</section>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+        <div class="module-alert module-alert-error">
+
+            <div class="module-alert-icon">
+                !
+            </div>
+
+            <div class="module-alert-text">
+
+                <strong>
+                    Deletion not completed
+                </strong>
+
+                <span>
+                    {{ message }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                DESTRUCTIVE ACTION
+            </small>
+
+            <h2>
+                Confirm Dataset Deletion
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="admin-delete-confirm">
+
+
+        <div class="admin-delete-warning">
+
+            <strong>
+                This action cannot be undone.
+            </strong>
+
+            <p>
+                Deleting this dataset will also remove
+                its normalized events, detections,
+                IOCs and stored telemetry files.
+            </p>
+
+        </div>
+
+
+        <div class="admin-delete-details">
+
+            <span>
+                Dataset
+            </span>
+
+            <strong>
+                {{ upload["original_name"] }}
+            </strong>
+
+
+            <span>
+                Upload ID
+            </span>
+
+            <strong>
+                #{{ upload["id"] }}
+            </strong>
+
+
+            <span>
+                Uploaded
+            </span>
+
+            <strong>
+                {{ upload["uploaded_at"] or "—" }}
+            </strong>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'admin_delete_dataset',
+                upload_id=upload['id']
+            ) }}"
+            class="admin-delete-form"
+        >
+
+
+            <label>
+
+                Type the dataset name exactly to confirm:
+
+                <strong>
+                    {{ upload["original_name"] }}
+                </strong>
+
+            </label>
+
+
+            <input
+                type="text"
+                name="confirm_name"
+                autocomplete="off"
+                required
+            >
+
+
+            <div class="admin-delete-actions">
+
+                <a
+                    href="{{ url_for('admin_telemetry') }}"
+                    class="ghost-btn"
+                >
+                    Cancel
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="danger-btn"
+                >
+                    Permanently Delete Dataset
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

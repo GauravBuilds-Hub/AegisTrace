@@ -1,0 +1,15 @@
+title: Windows Audit Log Cleared
+id: AT-WIN-002
+status: experimental
+description: AegisTrace academic detection specification for Windows Audit Log Cleared.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 1102
+  condition: selection
+level: high
+tags:
+  - attack.t1070.001

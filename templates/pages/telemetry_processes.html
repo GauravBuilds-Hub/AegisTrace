@@ -1,0 +1,408 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Processes | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            TELEMETRY / PROCESSES
+        </small>
+
+        <h1>
+            Processes
+        </h1>
+
+        <p>
+            Executable and process activity discovered
+            from normalized security telemetry.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROCESS SUMMARY
+     ===================================================== -->
+
+<section class="process-summary-grid">
+
+
+    <div class="process-summary-card">
+
+        <span>
+            UNIQUE PROCESSES
+        </span>
+
+        <strong>
+            {{ total_processes }}
+        </strong>
+
+    </div>
+
+
+    <div class="process-summary-card">
+
+        <span>
+            PROCESS EVENTS
+        </span>
+
+        <strong>
+            {{ process_event_total }}
+        </strong>
+
+    </div>
+
+
+    <div class="process-summary-card">
+
+        <span>
+            DISPLAYED
+        </span>
+
+        <strong>
+            {{ processes | length }}
+        </strong>
+
+    </div>
+
+
+    <div class="process-summary-card">
+
+        <span>
+            DATA SOURCE
+        </span>
+
+        <strong class="process-summary-text">
+            Event Database
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel process-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('telemetry_processes') }}"
+        class="process-search-form"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search process name or command line..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Processes
+        </button>
+
+
+        {% if search %}
+
+        <a
+            href="{{ url_for('telemetry_processes') }}"
+            class="process-clear-button"
+        >
+            Clear
+        </a>
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+<!-- =====================================================
+     PROCESS TABLE
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                PROCESS ACTIVITY
+            </small>
+
+            <h2>
+                Observed Processes
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+            Derived from normalized events
+        </span>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+
+        <table class="processes-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Process
+                    </th>
+
+                    <th>
+                        Events
+                    </th>
+
+                    <th>
+                        Hosts
+                    </th>
+
+                    <th>
+                        Users
+                    </th>
+
+                    <th>
+                        Command Events
+                    </th>
+
+                    <th>
+                        Latest Command Line
+                    </th>
+
+                    <th>
+                        Last Seen
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% if processes %}
+
+
+                    {% for process in processes %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            <div class="process-identity">
+
+                                <div class="process-icon">
+                                    EXE
+                                </div>
+
+                                <div class="process-details">
+
+                                    <strong>
+                                        {{ process["process_name"] }}
+                                    </strong>
+
+                                    <small>
+                                        Observed executable
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="process-number">
+
+                                {{ process["event_count"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="process-number">
+
+                                {{ process["unique_hosts"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="process-number">
+
+                                {{ process["unique_users"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="process-command-count">
+
+                                {{ process["command_line_events"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if process["latest_command_line"] %}
+
+                            <code class="process-command">
+
+                                {{ process["latest_command_line"] }}
+
+                            </code>
+
+                            {% else %}
+
+                            <span class="process-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="process-last-seen">
+
+                                {{ process["last_seen"] or "—" }}
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr>
+
+
+                    <td
+                        colspan="7"
+                        class="telemetry-empty-state"
+                    >
+
+
+                        {% if search %}
+
+
+                        <strong>
+
+                            No process matched
+                            "{{ search }}"
+
+                        </strong>
+
+
+                        <span>
+
+                            Try another process name
+                            or command-line term.
+
+                        </span>
+
+
+                        {% else %}
+
+
+                        <strong>
+                            No processes discovered yet.
+                        </strong>
+
+
+                        <span>
+
+                            Upload telemetry containing
+                            ProcessName, Process, Image
+                            or Executable fields.
+
+                        </span>
+
+
+                        {% endif %}
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

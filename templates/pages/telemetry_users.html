@@ -1,0 +1,455 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Users | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+
+    <div>
+
+
+        <small>
+            TELEMETRY / USERS
+        </small>
+
+
+        <h1>
+            Users
+        </h1>
+
+
+        <p>
+
+            User and account identities discovered from
+            normalized telemetry, including their host,
+            source IP and detection activity.
+
+        </p>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     USER SUMMARY
+     ===================================================== -->
+
+<section class="user-summary-grid">
+
+
+    <div class="user-summary-card">
+
+
+        <span>
+            UNIQUE USERS
+        </span>
+
+
+        <strong>
+            {{ total_users }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="user-summary-card">
+
+
+        <span>
+            USER EVENTS
+        </span>
+
+
+        <strong>
+            {{ user_event_total }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="user-summary-card">
+
+
+        <span>
+            DISPLAYED
+        </span>
+
+
+        <strong>
+            {{ users | length }}
+        </strong>
+
+
+    </div>
+
+
+
+    <div class="user-summary-card">
+
+
+        <span>
+            DATA SOURCE
+        </span>
+
+
+        <strong class="user-summary-text">
+            Event Database
+        </strong>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     USER SEARCH
+     ===================================================== -->
+
+<section class="panel user-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('telemetry_users') }}"
+        class="user-search-form"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search user or account name..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Users
+        </button>
+
+
+
+        {% if search %}
+
+
+            <a
+                href="{{ url_for('telemetry_users') }}"
+                class="user-clear-button"
+            >
+                Clear
+            </a>
+
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     USERS TABLE
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+
+            <small>
+                IDENTITY DISCOVERY
+            </small>
+
+
+            <h2>
+                Observed Users
+            </h2>
+
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Derived from normalized events
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="users-table">
+
+
+            <thead>
+
+
+                <tr>
+
+                    <th>User / Account</th>
+
+                    <th>Events</th>
+
+                    <th>Hosts</th>
+
+                    <th>Source IPs</th>
+
+                    <th>Detection State</th>
+
+                    <th>Last Seen</th>
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if users %}
+
+
+                    {% for user in users %}
+
+
+                        <tr>
+
+
+                            <td>
+
+
+                                <div class="user-identity">
+
+
+                                    <div class="user-account-icon">
+
+                                        USR
+
+                                    </div>
+
+
+                                    <div class="user-details">
+
+
+                                        <strong>
+
+                                            {{ user["username"] }}
+
+                                        </strong>
+
+
+                                        <small>
+
+                                            Observed account
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </td>
+
+
+
+                            <td>
+
+                                <span class="user-number">
+
+                                    {{ user["event_count"] }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <td>
+
+                                <span class="user-number">
+
+                                    {{ user["unique_hosts"] }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <td>
+
+                                <span class="user-number">
+
+                                    {{ user["unique_source_ips"] }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                {% if
+                                    user["detection_count"] > 0
+                                %}
+
+
+                                    <span class="user-risk alert">
+
+                                        {{ user["detection_count"] }}
+                                        DETECTION(S)
+
+                                    </span>
+
+
+                                {% else %}
+
+
+                                    <span class="user-risk clean">
+
+                                        NO DETECTIONS
+
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+
+                            <td>
+
+
+                                <span class="user-last-seen">
+
+                                    {{ user["last_seen"] or "—" }}
+
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                    <tr>
+
+
+                        <td
+                            colspan="6"
+                            class="telemetry-empty-state"
+                        >
+
+
+                            {% if search %}
+
+
+                                <strong>
+
+                                    No user matched
+                                    "{{ search }}"
+
+                                </strong>
+
+
+                                <span>
+
+                                    Try another user or
+                                    account name.
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <strong>
+
+                                    No users discovered yet.
+
+                                </strong>
+
+
+                                <span>
+
+                                    Upload telemetry containing
+                                    User, Username or Account fields.
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

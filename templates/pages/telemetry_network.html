@@ -1,0 +1,439 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Network | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            TELEMETRY / NETWORK
+        </small>
+
+        <h1>
+            Network
+        </h1>
+
+        <p>
+            Network indicators and communication activity
+            discovered from normalized telemetry.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     NETWORK SUMMARY
+     ===================================================== -->
+
+<section class="network-summary-grid">
+
+
+    <div class="network-summary-card">
+
+        <span>
+            NETWORK EVENTS
+        </span>
+
+        <strong>
+            {{ total_network_events }}
+        </strong>
+
+    </div>
+
+
+    <div class="network-summary-card">
+
+        <span>
+            SOURCE IPS
+        </span>
+
+        <strong>
+            {{ unique_source_ips }}
+        </strong>
+
+    </div>
+
+
+    <div class="network-summary-card">
+
+        <span>
+            DESTINATION IPS
+        </span>
+
+        <strong>
+            {{ unique_destination_ips }}
+        </strong>
+
+    </div>
+
+
+    <div class="network-summary-card">
+
+        <span>
+            DOMAINS
+        </span>
+
+        <strong>
+            {{ unique_domains }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     SEARCH
+     ===================================================== -->
+
+<section class="panel network-search-panel">
+
+
+    <form
+        method="GET"
+        action="{{ url_for('telemetry_network') }}"
+        class="network-search-form"
+    >
+
+
+        <input
+            type="search"
+            name="q"
+            value="{{ search }}"
+            placeholder="Search IP, domain, URL, host or user..."
+            autocomplete="off"
+        >
+
+
+        <button
+            type="submit"
+            class="primary-btn"
+        >
+            Search Network
+        </button>
+
+
+        {% if search %}
+
+        <a
+            href="{{ url_for('telemetry_network') }}"
+            class="network-clear-button"
+        >
+            Clear
+        </a>
+
+        {% endif %}
+
+
+    </form>
+
+
+</section>
+
+
+<!-- =====================================================
+     NETWORK TABLE
+     ===================================================== -->
+
+<section class="panel">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                NETWORK ACTIVITY
+            </small>
+
+            <h2>
+                Observed Connections
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+            Derived from normalized events
+        </span>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+
+        <table class="network-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Source IP
+                    </th>
+
+                    <th>
+                        Destination IP
+                    </th>
+
+                    <th>
+                        Domain
+                    </th>
+
+                    <th>
+                        URL
+                    </th>
+
+                    <th>
+                        Events
+                    </th>
+
+                    <th>
+                        Hosts
+                    </th>
+
+                    <th>
+                        Users
+                    </th>
+
+                    <th>
+                        Last Seen
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% if network_events %}
+
+
+                    {% for item in network_events %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            {% if item["source_ip"] %}
+
+                            <span class="network-ip source">
+
+                                {{ item["source_ip"] }}
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="network-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item["destination_ip"] %}
+
+                            <span class="network-ip destination">
+
+                                {{ item["destination_ip"] }}
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="network-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item["domain"] %}
+
+                            <span class="network-domain">
+
+                                {{ item["domain"] }}
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="network-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item["url"] %}
+
+                            <span class="network-url">
+
+                                {{ item["url"] }}
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="network-muted">
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="network-number">
+
+                                {{ item["event_count"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="network-number">
+
+                                {{ item["unique_hosts"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="network-number">
+
+                                {{ item["unique_users"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="network-last-seen">
+
+                                {{ item["last_seen"] or "—" }}
+
+                            </span>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr>
+
+
+                    <td
+                        colspan="8"
+                        class="telemetry-empty-state"
+                    >
+
+
+                        {% if search %}
+
+
+                        <strong>
+
+                            No network activity matched
+                            "{{ search }}"
+
+                        </strong>
+
+
+                        <span>
+
+                            Try another IP, domain,
+                            URL, host or user.
+
+                        </span>
+
+
+                        {% else %}
+
+
+                        <strong>
+                            No network activity discovered yet.
+                        </strong>
+
+
+                        <span>
+
+                            Upload telemetry containing
+                            SourceIP, DestinationIP,
+                            URL or Domain fields.
+
+                        </span>
+
+
+                        {% endif %}
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

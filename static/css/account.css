@@ -1,0 +1,81 @@
+.account-area {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding-left: 11px;
+    border-left: 1px solid #1d292f;
+}
+
+.account-avatar {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    border: 1px solid #2e4b4e;
+    background: #112326;
+    color: #add4d2;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.account-information {
+    min-width: 80px;
+}
+
+.account-information strong {
+    display: block;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #d8e1e4;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.account-information span {
+    display: block;
+    margin-top: 2px;
+    color: #64747c;
+    font-size: 8px;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-button {
+    height: 34px;
+    padding: 0 11px;
+    border: 1px solid #4c3339;
+    border-radius: 7px;
+    background: #171012;
+    color: #c9868e;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.logout-button:hover {
+    background: #211418;
+    border-color: #6a424b;
+    color: #e1a1a8;
+}
+
+@media (max-width: 1100px) {
+    .account-information {
+        display: none;
+    }
+}
+
+@media (max-width: 650px) {
+    .account-avatar {
+        display: none;
+    }
+}

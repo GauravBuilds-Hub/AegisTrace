@@ -1,0 +1,255 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Reports | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            REPORTING / SECURITY OUTPUT
+        </small>
+
+        <h1>
+            Reports Center
+        </h1>
+
+        <p>
+            Generate and review structured security reports
+            using analyzed AegisTrace data.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SUMMARY
+     ===================================================== -->
+
+<section class="reports-summary">
+
+
+    <div>
+
+        <span>
+            DATASETS
+        </span>
+
+        <strong>
+            {{ total_uploads }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            EVENTS
+        </span>
+
+        <strong>
+            {{ total_events }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            DETECTIONS
+        </span>
+
+        <strong>
+            {{ total_detections }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            IOCS
+        </span>
+
+        <strong>
+            {{ total_iocs }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            INCIDENTS
+        </span>
+
+        <strong>
+            {{ total_incidents }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     REPORT TYPES
+     ===================================================== -->
+
+<section class="reports-grid">
+
+
+    {% for report in reports %}
+
+
+    <article class="panel report-card">
+
+
+        <div class="report-card-top">
+
+
+            <div>
+
+                <small>
+                    SECURITY REPORT
+                </small>
+
+                <h2>
+                    {{ report["title"] }}
+                </h2>
+
+            </div>
+
+
+            <span
+                class="
+                    report-status
+
+                    {% if report['status'] == 'Ready' %}
+                    report-status-ready
+
+                    {% elif report['status'] == 'Planned' %}
+                    report-status-planned
+
+                    {% else %}
+                    report-status-waiting
+
+                    {% endif %}
+                "
+            >
+                {{ report["status"] }}
+            </span>
+
+
+        </div>
+
+
+        <p>
+            {{ report["description"] }}
+        </p>
+
+
+        <div class="report-card-footer">
+
+
+            {% if report["title"] == "Incident Report" %}
+
+            <a href="{{ url_for('reports_incidents') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "Threat Hunt Report" %}
+
+            <a href="{{ url_for('reports_threat_hunts') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "IOC Intelligence Report" %}
+
+            <a href="{{ url_for('reports_ioc_intelligence') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "Detection Coverage Report" %}
+
+            <a href="{{ url_for('reports_detection_coverage') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "MITRE Coverage Report" %}
+
+            <a href="{{ url_for('reports_mitre_coverage') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "Methodology Report" %}
+
+            <a href="{{ url_for('reports_methodology') }}" class="primary-btn">Open Report</a>
+
+            {% elif report["title"] == "Executive Summary" %}
+
+            <a href="{{ url_for('reports_executive_summary') }}" class="primary-btn">Open Report</a>
+
+            {% else %}
+
+            <button type="button" class="ghost-btn" disabled>Not Available</button>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </article>
+
+
+    {% endfor %}
+
+
+</section>
+
+
+
+<!-- =====================================================
+     INFO
+     ===================================================== -->
+
+<section class="panel reports-note">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                REPORTING STATUS
+            </small>
+
+            <h2>
+                Reports use analyzed project data
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="reports-note-body">
+
+        Report availability depends on the data currently
+        stored in AegisTrace. Reports are not generated
+        using fake findings.
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

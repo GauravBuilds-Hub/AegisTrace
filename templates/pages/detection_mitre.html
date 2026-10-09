@@ -1,0 +1,4 @@
+{% extends "layout/base.html" %}{% block title %}MITRE ATT&CK | AegisTrace{% endblock %}{% block content %}
+<section class="workspace-head"><div><small>DETECTION / MITRE ATT&CK</small><h1>MITRE ATT&CK Mapping</h1><p>{{ technique_count }} configured techniques mapped from the AegisTrace rule catalog.</p></div><div class="workspace-actions"><a class="ghost-btn" href="{{ url_for('reports_mitre_coverage') }}">Open Coverage Report</a></div></section>
+<section class="panel"><div class="table-scroll"><table class="data-table"><thead><tr><th>Technique</th><th>Name</th><th>Category</th><th>Configured Rules</th><th>Observed Detections</th></tr></thead><tbody>{% for t in techniques %}<tr><td>{{ t['id'] }}</td><td>{{ t['name'] }}</td><td>{{ t['category'] }}</td><td>{{ t['rule_count'] }}</td><td>{{ t['detection_count'] }}</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

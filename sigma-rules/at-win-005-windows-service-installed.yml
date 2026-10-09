@@ -1,0 +1,15 @@
+title: Windows Service Installed
+id: AT-WIN-005
+status: experimental
+description: AegisTrace academic detection specification for Windows Service Installed.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: system
+detection:
+  selection:
+    EventID: [7045, 4697]
+  condition: selection
+level: high
+tags:
+  - attack.t1543.003

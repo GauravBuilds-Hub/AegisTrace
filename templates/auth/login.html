@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Secure Analyst Access | AegisTrace</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/auth.css') }}"
+    >
+</head>
+
+<body class="auth-body">
+
+<div class="auth-container">
+
+    <section class="auth-left">
+
+        <div class="auth-brand">
+            <div class="auth-logo">AT</div>
+
+            <div class="auth-brand-name">
+                <strong>AEGISTRACE</strong>
+                <span>Detection Engineering & Threat Operations</span>
+            </div>
+        </div>
+
+        <div class="auth-intro">
+            <small>SECURITY OPERATIONS PLATFORM</small>
+
+            <h1>
+                See the signal.<br>
+                Trace the threat.
+            </h1>
+
+            <p>
+                Analyze security telemetry, engineer detections,
+                investigate suspicious activity and respond to
+                threats from one unified analyst workspace.
+            </p>
+        </div>
+
+        <div class="auth-features">
+            <span>DETECTION ENGINEERING</span>
+            <span>THREAT HUNTING</span>
+            <span>INCIDENT RESPONSE</span>
+        </div>
+
+        <div class="security-line line-1"></div>
+        <div class="security-line line-2"></div>
+        <div class="security-line line-3"></div>
+
+        <div class="security-point point-1"></div>
+        <div class="security-point point-2"></div>
+        <div class="security-point point-3"></div>
+
+    </section>
+
+
+    <section class="auth-right">
+
+        <button
+            id="themeToggle"
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch theme"
+            title="Switch theme"
+        >
+            <span id="themeIcon">☀</span>
+        </button>
+
+        <div class="auth-box">
+
+            <div class="auth-heading">
+                <small>AUTHORIZED ACCESS</small>
+                <h2>Secure Analyst Access</h2>
+
+                <p>
+                    Sign in to enter the AegisTrace
+                    security operations workspace.
+                </p>
+            </div>
+
+
+            {% if registered %}
+            <div class="auth-alert auth-alert-success">
+                <div class="alert-icon">✓</div>
+
+                <div class="alert-content">
+                    <strong>Account created successfully</strong>
+                    <span>
+                        Your analyst account is ready.
+                        Sign in to continue.
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+
+
+            {% if logged_out %}
+            <div class="auth-alert auth-alert-neutral">
+                <div class="alert-icon">✓</div>
+
+                <div class="alert-content">
+                    <strong>Signed out securely</strong>
+                    <span>
+                        Your AegisTrace session has ended.
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+
+
+            {% if error %}
+            <div class="auth-alert auth-alert-error">
+                <div class="alert-icon">!</div>
+
+                <div class="alert-content">
+                    <strong>Unable to sign in</strong>
+                    <span>{{ error }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+
+            <form
+                method="POST"
+                class="auth-form"
+            >
+
+                <div class="form-group">
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value="{{ email }}"
+                        placeholder="analyst@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+
+                <div class="auth-options">
+                    <label class="remember">
+                        <input
+                            type="checkbox"
+                            disabled
+                        >
+
+                        <span>Remember me</span>
+                    </label>
+
+                    <span class="forgot">
+                        Password recovery later
+                    </span>
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="auth-button"
+                >
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+                <span>New to AegisTrace?</span>
+
+                <a href="{{ url_for('register') }}">
+                    Create Account
+                </a>
+            </div>
+
+
+            <div class="auth-note">
+                Authorized security personnel only.
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/theme.js') }}">
+</script>
+
+</body>
+</html>

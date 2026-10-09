@@ -1,0 +1,15 @@
+title: Process Discovery
+id: AT-DISC-002
+status: experimental
+description: AegisTrace academic detection specification for Process Discovery.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    CommandLine|contains: ['tasklist', 'get-process', 'wmic process get']
+  condition: selection
+level: low
+tags:
+  - attack.t1057

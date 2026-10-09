@@ -1,0 +1,16 @@
+title: MSHTA Remote Content
+id: AT-LOL-004
+status: experimental
+description: AegisTrace academic detection specification for MSHTA Remote Content.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    Image|endswith: '\\mshta.exe'
+    CommandLine|contains: ['http://', 'https://', 'javascript:', 'vbscript:']
+  condition: selection
+level: high
+tags:
+  - attack.t1218.005

@@ -1,0 +1,15 @@
+title: Local User Account Created
+id: AT-WIN-003
+status: experimental
+description: AegisTrace academic detection specification for Local User Account Created.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4720
+  condition: selection
+level: medium
+tags:
+  - attack.t1136.001

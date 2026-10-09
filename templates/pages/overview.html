@@ -1,0 +1,296 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+Overview | AegisTrace
+{% endblock %}
+
+{% block content %}
+
+<section class="workspace-head">
+
+    <div>
+        <small>SECURITY OPERATIONS</small>
+        <h1>Security posture</h1>
+
+        <p>
+            Operational findings will populate automatically
+            after supported security telemetry is analyzed.
+        </p>
+    </div>
+
+    <div class="workspace-actions">
+
+        <button
+            class="ghost-btn"
+            type="button"
+            data-open-drawer
+        >
+            Detail inspector
+        </button>
+
+        <a
+            class="primary-btn"
+            href="{{ url_for('module_page', module_name='telemetry') }}"
+        >
+            Ingest telemetry
+        </a>
+
+    </div>
+
+</section>
+
+
+<section class="posture-strip">
+
+    <div>
+        <span>Events Processed</span>
+        <strong>—</strong>
+    </div>
+
+    <div>
+        <span>Active Detections</span>
+        <strong>—</strong>
+    </div>
+
+    <div>
+        <span>Critical Findings</span>
+        <strong>—</strong>
+    </div>
+
+    <div>
+        <span>Open Incidents</span>
+        <strong>—</strong>
+    </div>
+
+    <div>
+        <span>Malicious IOCs</span>
+        <strong>—</strong>
+    </div>
+
+    <div>
+        <span>Blocked Indicators</span>
+        <strong>—</strong>
+    </div>
+
+</section>
+
+
+<section class="overview-grid">
+
+    <article class="panel detection-activity">
+
+        <div class="panel-head">
+
+            <div>
+                <small>ACTIVITY</small>
+                <h2>Detection activity</h2>
+            </div>
+
+            <span class="panel-meta">
+                No dataset selected
+            </span>
+
+        </div>
+
+        <div class="empty-visual">
+
+            <div
+                class="timeline-grid"
+                aria-hidden="true"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <strong>
+                No telemetry has been analyzed yet.
+            </strong>
+
+            <p>
+                Upload supported security data to begin
+                parsing, detection, IOC extraction
+                and investigation.
+            </p>
+
+            <a
+                href="{{ url_for('module_page', module_name='telemetry') }}"
+            >
+                Go to telemetry →
+            </a>
+
+        </div>
+
+    </article>
+
+
+    <aside class="panel posture-panel">
+
+        <div class="panel-head">
+            <div>
+                <small>RISK</small>
+                <h2>Current threat posture</h2>
+            </div>
+        </div>
+
+        <div class="severity-stack">
+
+            <div>
+                <span class="sev-dot critical"></span>
+                <b>Critical</b>
+                <strong>—</strong>
+            </div>
+
+            <div>
+                <span class="sev-dot high"></span>
+                <b>High</b>
+                <strong>—</strong>
+            </div>
+
+            <div>
+                <span class="sev-dot medium"></span>
+                <b>Medium</b>
+                <strong>—</strong>
+            </div>
+
+            <div>
+                <span class="sev-dot low"></span>
+                <b>Low</b>
+                <strong>—</strong>
+            </div>
+
+        </div>
+
+        <div class="coverage-block">
+
+            <div class="coverage-label">
+                <span>MITRE ATT&CK coverage</span>
+                <strong>Awaiting assessment</strong>
+            </div>
+
+            <div class="coverage-track">
+                <span style="width: 0%"></span>
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <article class="panel recent-findings">
+
+        <div class="panel-head">
+
+            <div>
+                <small>QUEUE</small>
+                <h2>Recent security findings</h2>
+            </div>
+
+            <a
+                href="{{ url_for('module_page', module_name='detection') }}"
+            >
+                Open Detection
+            </a>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Detection</th>
+                        <th>Host</th>
+                        <th>User</th>
+                        <th>Source IP</th>
+                        <th>MITRE</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="empty-row">
+                        <td colspan="8">
+                            No detections available.
+                            Results will appear only after
+                            real telemetry is processed.
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </article>
+
+
+    <aside class="panel indicators-panel">
+
+        <div class="panel-head">
+
+            <div>
+                <small>INVESTIGATION</small>
+                <h2>Suspicious indicators</h2>
+            </div>
+
+            <a
+                href="{{ url_for('module_page', module_name='investigation') }}"
+            >
+                Open Investigation
+            </a>
+
+        </div>
+
+        <div class="empty-list">
+            <strong>No indicators identified</strong>
+
+            <p>
+                Suspicious IPs, domains, URLs and hashes
+                will appear here after analysis.
+            </p>
+        </div>
+
+    </aside>
+
+
+    <article class="panel activity-feed">
+
+        <div class="panel-head">
+
+            <div>
+                <small>AUDIT</small>
+                <h2>SOC activity feed</h2>
+            </div>
+
+        </div>
+
+        <div class="activity-empty">
+
+            <span class="activity-line"></span>
+
+            <div>
+                <strong>
+                    No operational activity recorded
+                </strong>
+
+                <p>
+                    Detections, investigation activity,
+                    response actions and report generation
+                    will be recorded here.
+                </p>
+            </div>
+
+        </div>
+
+    </article>
+
+</section>
+
+{% endblock %}

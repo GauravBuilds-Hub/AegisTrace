@@ -1,0 +1,239 @@
+/* =========================================================
+   RESPONSE PLAYBOOKS
+   ========================================================= */
+
+.playbook-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    margin-bottom: 14px;
+
+    border: 1px solid var(--line);
+    border-radius: 10px;
+
+    background: var(--surface);
+
+    overflow: hidden;
+}
+
+
+.playbook-summary > div {
+    padding: 14px 16px;
+
+    border-right:
+        1px solid
+        var(--line-soft);
+}
+
+
+.playbook-summary > div:last-child {
+    border-right: 0;
+}
+
+
+.playbook-summary span {
+    display: block;
+
+    color: var(--muted-2);
+
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: .09em;
+}
+
+
+.playbook-summary strong {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #d7e0e3;
+
+    font-size: 20px;
+}
+
+
+.playbook-summary-text {
+    color: #9bc2c1 !important;
+
+    font-size: 12px !important;
+}
+
+
+/* PLAYBOOK GRID */
+
+.playbook-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 14px;
+}
+
+
+.playbook-card {
+    min-width: 0;
+}
+
+
+.playbook-body {
+    padding: 16px;
+}
+
+
+/* META */
+
+.playbook-meta {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+    padding-bottom: 15px;
+
+    border-bottom:
+        1px solid
+        var(--line-soft);
+}
+
+
+.playbook-meta span {
+    color: var(--muted-2);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .08em;
+}
+
+
+.playbook-meta p {
+    margin: 5px 0 0;
+
+    color: #9ba9af;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+/* STEPS */
+
+.playbook-steps {
+    padding-top: 15px;
+}
+
+
+.playbook-steps > small {
+    color: var(--muted-2);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .09em;
+}
+
+
+.playbook-steps ol {
+    margin:
+        12px 0 0;
+
+    padding-left:
+        22px;
+}
+
+
+.playbook-steps li {
+    padding:
+        5px 0 5px 3px;
+
+    color: #aebbc1;
+
+    font-size: 10px;
+
+    line-height: 1.55;
+}
+
+
+.playbook-steps li::marker {
+    color: #6fa5a5;
+
+    font-family:
+        Consolas,
+        monospace;
+}
+
+
+/* NOTE */
+
+.playbook-note {
+    margin-top: 14px;
+}
+
+
+.playbook-note-body {
+    padding: 16px;
+
+    color: #89989f;
+
+    font-size: 10px;
+
+    line-height: 1.7;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .playbook-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 620px) {
+
+    .playbook-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .playbook-summary > div {
+        border-right: 0;
+
+        border-bottom:
+            1px solid
+            var(--line-soft);
+    }
+
+
+    .playbook-summary > div:last-child {
+        border-bottom: 0;
+    }
+
+
+    .playbook-meta {
+        grid-template-columns: 1fr;
+    }
+
+}

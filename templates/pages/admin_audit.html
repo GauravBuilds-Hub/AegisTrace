@@ -1,0 +1,4 @@
+{% extends "layout/base.html" %}{% block title %}Admin Audit | AegisTrace{% endblock %}{% block content %}
+<section class="workspace-head"><div><small>ADMINISTRATION / AUDIT</small><h1>Audit History</h1><p>Administrative changes and destructive data-management actions.</p></div></section>
+<section class="panel">{% if entries %}<div class="table-scroll"><table class="data-table"><thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>Target</th><th>Details</th></tr></thead><tbody>{% for e in entries %}<tr><td>{{ e['created_at'] }}</td><td>{{ e['admin_name'] or 'Unknown' }}<div class="subtext">{{ e['admin_email'] or '' }}</div></td><td>{{ e['action'] }}</td><td>{{ e['target_type'] or '—' }} · {{ e['target_name'] or e['target_id'] or '—' }}</td><td>{{ e['details'] or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state">No administrative audit entries yet.</div>{% endif %}</section>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+Playbooks | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            RESPONSE / PLAYBOOKS
+        </small>
+
+        <h1>
+            Response Playbooks
+        </h1>
+
+        <p>
+            Structured analyst procedures for investigating
+            and responding to common security findings.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="playbook-summary">
+
+
+    <div>
+
+        <span>
+            PLAYBOOKS
+        </span>
+
+        <strong>
+            {{ playbooks | length }}
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            EXECUTION MODE
+        </span>
+
+        <strong class="playbook-summary-text">
+            Analyst Guided
+        </strong>
+
+    </div>
+
+
+    <div>
+
+        <span>
+            AUTOMATIC BLOCKING
+        </span>
+
+        <strong class="playbook-summary-text">
+            Disabled
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<div class="playbook-grid">
+
+
+    {% for playbook in playbooks %}
+
+
+    <section class="panel playbook-card">
+
+
+        <div class="panel-head">
+
+
+            <div>
+
+                <small>
+                    {{ playbook["id"] }}
+                </small>
+
+                <h2>
+                    {{ playbook["title"] }}
+                </h2>
+
+            </div>
+
+
+            <span
+                class="severity-badge
+                {% if playbook['severity'] == 'High' %}
+                severity-badge-high
+                {% elif playbook['severity'] == 'Medium' %}
+                severity-badge-medium
+                {% endif %}"
+            >
+
+                {{ playbook["severity"] }}
+
+            </span>
+
+
+        </div>
+
+
+        <div class="playbook-body">
+
+
+            <div class="playbook-meta">
+
+
+                <div>
+
+                    <span>
+                        TRIGGER
+                    </span>
+
+                    <p>
+                        {{ playbook["trigger"] }}
+                    </p>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        MITRE / CONTEXT
+                    </span>
+
+                    <p>
+                        {{ playbook["mitre"] }}
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="playbook-steps">
+
+
+                <small>
+                    RESPONSE PROCEDURE
+                </small>
+
+
+                <ol>
+
+                    {% for step in playbook["steps"] %}
+
+                    <li>
+                        {{ step }}
+                    </li>
+
+                    {% endfor %}
+
+                </ol>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+    {% endfor %}
+
+
+</div>
+
+
+<section class="panel playbook-note">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                RESPONSE SAFETY
+            </small>
+
+            <h2>
+                Analyst Confirmation Required
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="playbook-note-body">
+
+        AegisTrace currently provides investigation and
+        response recommendations only. Playbooks do not
+        automatically modify firewall rules, disable user
+        accounts, terminate processes or make operating-system
+        changes.
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

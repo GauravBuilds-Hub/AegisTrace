@@ -1,0 +1,29 @@
+{% extends "layout/base.html" %}
+
+{% block title %}
+Not Found | AegisTrace
+{% endblock %}
+
+{% block content %}
+
+<section class="workspace-head">
+
+    <div>
+        <small>404</small>
+        <h1>Workspace not found</h1>
+
+        <p>
+            The requested AegisTrace module does not exist.
+        </p>
+    </div>
+
+    <a
+        class="primary-btn"
+        href="{{ url_for('index') }}"
+    >
+        Return to overview
+    </a>
+
+</section>
+
+{% endblock %}

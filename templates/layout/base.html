@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        AegisTrace
+        {% endblock %}
+    </title>
+
+
+    <!-- MAIN CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/aegistrace.css'
+        ) }}"
+    >
+
+
+    <!-- ACCOUNT CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/account.css'
+        ) }}"
+    >
+
+
+    <!-- TELEMETRY CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/telemetry.css'
+        ) }}?v=2"
+    >
+
+
+    <!-- ADMIN CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/admin.css'
+        ) }}?v=2"
+    >
+
+
+    <!-- RESPONSE / PLAYBOOK CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/response.css'
+        ) }}?v=1"
+    >
+
+
+    <!-- REPORTS CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/report.css'
+        ) }}?v=3"
+    >
+
+
+    <!-- WORKSPACE MODULE CSS -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='css/workspace.css'
+        ) }}?v=1"
+    >
+
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+
+<div class="app-shell">
+
+
+    <!-- =====================================================
+         LEFT NAVIGATION
+         ===================================================== -->
+
+    <aside class="nav-rail">
+
+
+        <!-- LOGO -->
+
+        <a
+            href="{{ url_for(
+                'module_page',
+                module_name='overview'
+            ) }}"
+            class="brand-mark"
+            title="AegisTrace"
+        >
+            AT
+        </a>
+
+
+
+        <nav class="rail-links">
+
+
+            <!-- OVERVIEW -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='overview'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'overview' %}
+                active
+                {% endif %}"
+                data-label="Overview"
+            >
+                OV
+            </a>
+
+
+
+            <!-- TELEMETRY -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='telemetry'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'telemetry' %}
+                active
+                {% endif %}"
+                data-label="Telemetry"
+            >
+                TM
+            </a>
+
+
+
+            <!-- DETECTION -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='detection'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'detection' %}
+                active
+                {% endif %}"
+                data-label="Detection"
+            >
+                DT
+            </a>
+
+
+
+            <!-- INVESTIGATION -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='investigation'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'investigation' %}
+                active
+                {% endif %}"
+                data-label="Investigation"
+            >
+                IV
+            </a>
+
+
+
+            <!-- RESPONSE -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='response'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'response' %}
+                active
+                {% endif %}"
+                data-label="Response"
+            >
+                RS
+            </a>
+
+
+
+            <!-- REPORTS -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='reports'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'reports' %}
+                active
+                {% endif %}"
+                data-label="Reports"
+            >
+                RP
+            </a>
+
+
+
+            <!-- ADMIN -->
+
+            {% if
+                current_user
+                and
+                current_user["role"] == "Admin"
+            %}
+
+            <a
+                href="{{ url_for(
+                    'admin_dashboard'
+                ) }}"
+                class="rail-item
+                {% if active_module == 'admin' %}
+                active
+                {% endif %}"
+                data-label="Administration"
+            >
+                AD
+            </a>
+
+            {% endif %}
+
+
+        </nav>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         TOP COMMAND BAR
+         ===================================================== -->
+
+    <header class="command-bar">
+
+
+        <!-- BRAND -->
+
+        <div class="command-brand">
+
+            <strong>
+                AEGISTRACE
+            </strong>
+
+            <span>
+                Detection Engineering & Threat Analysis
+            </span>
+
+        </div>
+
+
+
+        <!-- SEARCH -->
+
+        <form class="global-search" method="GET" action="{{ url_for('global_search') }}">
+
+            <span class="search-icon">
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                name="q"
+                value="{{ request.args.get('q', '') if request.endpoint == 'global_search' else '' }}"
+                placeholder="Search IP, hostname, user, hash, event ID, technique..."
+                autocomplete="off"
+            >
+
+            <kbd>
+                /
+            </kbd>
+
+        </form>
+
+
+
+        <!-- RIGHT ACTIONS -->
+
+        <div class="command-actions">
+
+
+            <!-- HEALTH -->
+
+            <div class="health-state">
+
+                <span class="health-dot"></span>
+
+                <div>
+
+                    <small>
+                        SYSTEM HEALTH
+                    </small>
+
+                    <strong>
+                        OPERATIONAL
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- UPLOAD -->
+
+            <a
+                href="{{ url_for(
+                    'module_page',
+                    module_name='telemetry'
+                ) }}"
+                class="upload-btn"
+            >
+                Upload
+            </a>
+
+
+
+            <!-- USER -->
+
+            {% if current_user %}
+
+            <div class="account-area">
+
+
+                <div class="account-avatar">
+
+                    {{ current_user["full_name"][0] | upper }}
+
+                </div>
+
+
+                <div class="account-information">
+
+                    <strong>
+                        {{ current_user["full_name"] }}
+                    </strong>
+
+                    <small>
+                        {{ current_user["role"] }}
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- LOGOUT -->
+
+            <form
+                action="{{ url_for('logout') }}"
+                method="POST"
+                class="logout-form"
+            >
+
+                <button
+                    type="submit"
+                    class="logout-button"
+                >
+                    Logout
+                </button>
+
+            </form>
+
+            {% endif %}
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTEXT PANEL
+         ===================================================== -->
+
+    <aside class="context-panel">
+
+
+        <div class="context-heading">
+
+            <small>
+                MODULE
+            </small>
+
+            <h2>
+                {{ module["title"] }}
+            </h2>
+
+            <p>
+                {{ module["description"] }}
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SUB NAVIGATION
+             ================================================= -->
+
+        <nav class="context-links">
+
+
+            {% for item in module["context"] %}
+
+
+
+                <!-- =========================================
+                     TELEMETRY
+                     ========================================= -->
+
+
+                {% if
+                    active_module == "telemetry"
+                    and
+                    item == "Upload Logs"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'module_page',
+                        module_name='telemetry'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "telemetry"
+                    and
+                    item == "Parsed Events"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'telemetry_events'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry/events' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "telemetry"
+                    and
+                    item == "Hosts"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'telemetry_hosts'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry/hosts' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "telemetry"
+                    and
+                    item == "Users"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'telemetry_users'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry/users' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "telemetry"
+                    and
+                    item == "Processes"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'telemetry_processes'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry/processes' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "telemetry"
+                    and
+                    item == "Network"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'telemetry_network'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/telemetry/network' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                <!-- =========================================
+                     DETECTION
+                     ========================================= -->
+
+                {% elif active_module == "detection" and item == "Detection Feed" %}
+                <a href="{{ url_for('detection_feed') }}" class="context-link {% if request.path == '/detection/feed' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "detection" and item == "Sigma Rules" %}
+                <a href="{{ url_for('detection_rules') }}" class="context-link {% if request.path == '/detection/rules' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "detection" and item == "Rule Testing" %}
+                <a href="{{ url_for('detection_rule_testing') }}" class="context-link {% if request.path == '/detection/rule-testing' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "detection" and item == "False Positives" %}
+                <a href="{{ url_for('detection_false_positives') }}" class="context-link {% if request.path == '/detection/false-positives' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "detection" and item == "MITRE ATT&CK" %}
+                <a href="{{ url_for('detection_mitre') }}" class="context-link {% if request.path == '/detection/mitre' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "detection" and item == "Coverage" %}
+                <a href="{{ url_for('detection_coverage') }}" class="context-link {% if request.path == '/reports/detection-coverage' %}active{% endif %}">{{ item }}</a>
+
+
+                <!-- =========================================
+                     INVESTIGATION
+                     ========================================= -->
+
+                {% elif active_module == "investigation" and item == "IOC Intelligence" %}
+                <a href="{{ url_for('investigation_iocs') }}" class="context-link {% if request.path == '/investigation/iocs' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "investigation" and item == "Threat Hunting" %}
+                <a href="{{ url_for('investigation_hunts') }}" class="context-link {% if request.path == '/investigation/hunts' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "investigation" and item == "Incidents" %}
+                <a href="{{ url_for('investigation_incidents') }}" class="context-link {% if request.path.startswith('/investigation/incidents') %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "investigation" and item == "Evidence" %}
+                <a href="{{ url_for('investigation_evidence') }}" class="context-link {% if request.path == '/investigation/evidence' %}active{% endif %}">{{ item }}</a>
+
+
+                <!-- =========================================
+                     ADMIN
+                     ========================================= -->
+
+
+                {% elif
+                    active_module == "admin"
+                    and
+                    item == "Dashboard"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_dashboard'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/admin' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "admin"
+                    and
+                    item == "User Management"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_users'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/admin/users' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "admin"
+                    and
+                    item == "Telemetry Management"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'admin_telemetry'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/admin/telemetry' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "admin"
+                    and
+                    item == "Audit History"
+                %}
+
+                <a
+                    href="{{ url_for('admin_audit_history') }}"
+                    class="context-link {% if request.path == '/admin/audit' %}active{% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                <!-- =========================================
+                     RESPONSE
+                     ========================================= -->
+
+
+                {% elif active_module == "response" and item == "Recommended Actions" %}
+                <a href="{{ url_for('response_recommended_actions') }}" class="context-link {% if request.path == '/response/recommended-actions' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "response" and item == "Blocklist" %}
+                <a href="{{ url_for('response_blocklist') }}" class="context-link {% if request.path == '/response/blocklist' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "response" and item == "Playbooks" %}
+                <a href="{{ url_for('response_playbooks') }}" class="context-link {% if request.path == '/response/playbooks' %}active{% endif %}">{{ item }}</a>
+
+                {% elif active_module == "response" and item == "Action History" %}
+                <a href="{{ url_for('response_action_history') }}" class="context-link {% if request.path == '/response/action-history' %}active{% endif %}">{{ item }}</a>
+
+
+
+                <!-- =========================================
+                     REPORTS
+                     ========================================= -->
+
+
+                {% elif
+                    active_module == "reports"
+                    and
+                    item == "Incident Reports"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'reports_incidents'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/reports/incidents' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+                {% elif active_module == "reports" and item == "Threat Hunt Reports" %}
+                <a href="{{ url_for('reports_threat_hunts') }}" class="context-link {% if request.path == '/reports/threat-hunts' %}active{% endif %}">{{ item }}</a>
+
+
+
+                {% elif
+                    active_module == "reports"
+                    and
+                    item == "Coverage Reports"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'reports_detection_coverage'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/reports/detection-coverage' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "reports"
+                    and
+                    item == "IOC Reports"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'reports_ioc_intelligence'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/reports/ioc-intelligence' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif active_module == "reports" and item == "Methodology" %}
+                <a href="{{ url_for('reports_methodology') }}" class="context-link {% if request.path == '/reports/methodology' %}active{% endif %}">{{ item }}</a>
+
+
+                {% elif
+                    active_module == "reports"
+                    and
+                    item == "Executive Summary"
+                %}
+
+                <a
+                    href="{{ url_for(
+                        'reports_executive_summary'
+                    ) }}"
+                    class="context-link
+                    {% if request.path == '/reports/executive-summary' %}
+                    active
+                    {% endif %}"
+                >
+                    {{ item }}
+                </a>
+
+
+
+                {% elif
+                    active_module == "reports"
+                %}
+
+                <button
+                    type="button"
+                    class="context-link"
+                    disabled
+                >
+                    {{ item }}
+                </button>
+
+
+
+                <!-- =========================================
+                     NOT IMPLEMENTED YET
+                     ========================================= -->
+
+
+                {% else %}
+
+                <button
+                    type="button"
+                    class="context-link"
+                    disabled
+                >
+                    {{ item }}
+                </button>
+
+
+                {% endif %}
+
+
+            {% endfor %}
+
+
+        </nav>
+
+
+
+        <!-- =================================================
+             SYSTEM STATE
+             ================================================= -->
+
+        <div class="context-note">
+
+            <span class="note-dot"></span>
+
+            <div>
+
+                <strong>
+                    System state
+                </strong>
+
+                <small>
+                    Workspace ready
+                </small>
+
+            </div>
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="workspace">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+
+    <!-- =====================================================
+         INTELLIGENCE DRAWER
+         ===================================================== -->
+
+    <aside
+        class="intel-drawer"
+        id="intelDrawer"
+        hidden
+    >
+
+
+        <div class="drawer-head">
+
+
+            <div>
+
+                <small>
+                    INTELLIGENCE
+                </small>
+
+                <strong>
+                    Details
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="icon-btn"
+                id="closeIntelDrawer"
+            >
+                ×
+            </button>
+
+
+        </div>
+
+
+        <div class="drawer-empty">
+
+            Select an event, detection or indicator
+            to inspect its details.
+
+        </div>
+
+
+    </aside>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script
+    src="{{ url_for(
+        'static',
+        filename='js/aegistrace.js'
+    ) }}"
+></script>
+
+
+{% block extra_js %}
+{% endblock %}
+
+
+</body>
+
+</html>

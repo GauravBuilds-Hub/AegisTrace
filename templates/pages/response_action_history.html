@@ -1,0 +1,4 @@
+{% extends "layout/base.html" %}{% block title %}Action History | AegisTrace{% endblock %}{% block content %}
+<section class="workspace-head"><div><small>RESPONSE / ACTION HISTORY</small><h1>Action History</h1><p>Audit trail of response workflow actions recorded inside AegisTrace.</p></div></section>
+<section class="panel">{% if actions %}<div class="table-scroll"><table class="data-table"><thead><tr><th>Time</th><th>Analyst</th><th>Action</th><th>Target</th><th>Status</th><th>Notes</th></tr></thead><tbody>{% for a in actions %}<tr><td>{{ a['created_at'] }}</td><td>{{ a['analyst_name'] or 'Unknown' }}</td><td>{{ a['action_type'] }}</td><td>{{ a['target_type'] or '—' }}<div class="subtext mono">{{ a['target_value'] or '' }}</div></td><td>{{ a['status'] }}</td><td>{{ a['notes'] or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state">No response actions have been recorded.</div>{% endif %}</section>
+{% endblock %}

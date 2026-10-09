@@ -1,0 +1,15 @@
+title: Account Discovery
+id: AT-DISC-001
+status: experimental
+description: AegisTrace academic detection specification for Account Discovery.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    CommandLine|contains: ['whoami /all', 'net user', 'dsquery user', 'wmic useraccount']
+  condition: selection
+level: low
+tags:
+  - attack.t1087.001

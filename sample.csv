@@ -1,0 +1,5 @@
+TimeCreated,EventID,Computer,Account,SourceIP,ProcessName,CommandLine
+2026-10-06T10:01:00,4625,LAB-PC,user1,192.168.1.20,,
+2026-10-06T10:02:00,4625,LAB-PC,user1,192.168.1.20,,
+2026-10-06T10:03:00,4625,LAB-PC,user1,192.168.1.20,,
+2026-10-06T10:04:00,4688,LAB-PC,admin,192.168.1.30,powershell.exe,powershell.exe -enc SGVsbG8=

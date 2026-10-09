@@ -1,0 +1,15 @@
+title: User Added to Privileged Group
+id: AT-WIN-004
+status: experimental
+description: AegisTrace academic detection specification for User Added to Privileged Group.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: [4728, 4732, 4756]
+  condition: selection
+level: high
+tags:
+  - attack.t1098

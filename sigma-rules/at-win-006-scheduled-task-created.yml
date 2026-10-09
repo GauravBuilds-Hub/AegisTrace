@@ -1,0 +1,16 @@
+title: Scheduled Task Created
+id: AT-WIN-006
+status: experimental
+description: AegisTrace academic detection specification for Scheduled Task Created.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    EventID: 4698
+    CommandLine|contains|all: ['schtasks', '/create']
+  condition: selection
+level: medium
+tags:
+  - attack.t1053.005

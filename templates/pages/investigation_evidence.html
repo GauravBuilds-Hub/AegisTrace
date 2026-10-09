@@ -1,0 +1,4 @@
+{% extends "layout/base.html" %}{% block title %}Evidence | AegisTrace{% endblock %}{% block content %}
+<section class="workspace-head"><div><small>INVESTIGATION / EVIDENCE</small><h1>Evidence Workspace</h1><p>Project evidence files stored under the evidence directory. AegisTrace does not fabricate evidence automatically.</p></div></section>
+<div class="evidence-grid">{% for g in evidence_groups %}<section class="evidence-card"><small>evidence/{{ g['folder'] }}/</small><h3>{{ g['title'] }}</h3>{% if g['files'] %}{% for f in g['files'] %}<div class="evidence-file"><span>{{ f['name'] }}</span><span>{{ f['size'] }} B</span></div>{% endfor %}{% else %}<p>No evidence files stored in this folder yet.</p>{% endif %}</section>{% endfor %}</div>
+{% endblock %}

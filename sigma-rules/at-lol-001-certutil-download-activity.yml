@@ -1,0 +1,16 @@
+title: Certutil Download Activity
+id: AT-LOL-001
+status: experimental
+description: AegisTrace academic detection specification for Certutil Download Activity.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    Image|endswith: '\\certutil.exe'
+    CommandLine|contains: ['urlcache', 'http://', 'https://', '-split']
+  condition: selection
+level: high
+tags:
+  - attack.t1105

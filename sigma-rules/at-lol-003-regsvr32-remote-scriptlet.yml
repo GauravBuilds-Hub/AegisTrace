@@ -1,0 +1,16 @@
+title: Regsvr32 Remote Scriptlet
+id: AT-LOL-003
+status: experimental
+description: AegisTrace academic detection specification for Regsvr32 Remote Scriptlet.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: process_creation
+detection:
+  selection:
+    Image|endswith: '\\regsvr32.exe'
+    CommandLine|contains: ['scrobj.dll', '/i:http', '/i:https']
+  condition: selection
+level: high
+tags:
+  - attack.t1218.010

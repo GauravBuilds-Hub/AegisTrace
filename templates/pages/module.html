@@ -1,0 +1,2497 @@
+{% extends "layout/base.html" %}
+
+
+{% block title %}
+{{ module.title }} | AegisTrace
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =====================================================
+     PAGE HEADER
+     ===================================================== -->
+
+<section class="workspace-head">
+
+    <div>
+
+        <small>
+            AEGISTRACE WORKSPACE
+        </small>
+
+        <h1>
+            {{ module.title }}
+        </h1>
+
+        <p>
+            {{ module.description }}
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FLASH MESSAGES
+     ===================================================== -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        {% for category, message in messages %}
+
+        <div
+            class="
+                module-alert
+
+                {% if category == 'success' %}
+                    module-alert-success
+                {% else %}
+                    module-alert-error
+                {% endif %}
+            "
+        >
+
+            <div class="module-alert-icon">
+
+                {% if category == "success" %}
+                    ✓
+                {% else %}
+                    !
+                {% endif %}
+
+            </div>
+
+
+            <div class="module-alert-text">
+
+                <strong>
+
+                    {% if category == "success" %}
+                        Processing completed
+                    {% else %}
+                        Processing issue
+                    {% endif %}
+
+                </strong>
+
+                <span>
+                    {{ message }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endwith %}
+
+
+
+<!-- =====================================================
+     TELEMETRY MODULE
+     ===================================================== -->
+
+{% if active_module == "telemetry" %}
+
+
+<section class="module-shell telemetry-layout">
+
+
+    <!-- =================================================
+         UPLOAD PANEL
+         ================================================= -->
+
+    <article class="panel module-main">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    TELEMETRY INGESTION
+                </small>
+
+                <h2>
+                    Upload security telemetry
+                </h2>
+
+            </div>
+
+
+            <span class="status-badge neutral">
+
+                CSV · JSON
+
+            </span>
+
+        </div>
+
+
+
+        <form
+            class="telemetry-upload-form"
+            method="POST"
+            action="{{ url_for('upload_telemetry') }}"
+            enctype="multipart/form-data"
+        >
+
+
+            <label class="ingest-zone">
+
+
+                <div class="ingest-icon">
+
+                    ⇧
+
+                </div>
+
+
+                <strong>
+
+                    SELECT SECURITY TELEMETRY
+
+                </strong>
+
+
+                <p>
+
+                    Upload security logs for parsing,
+                    normalization, detection and IOC analysis.
+
+                </p>
+
+
+                <input
+                    type="file"
+                    name="telemetry_file"
+                    accept=".csv,.json"
+                    required
+                >
+
+
+                <small>
+
+                    Supported: CSV · JSON
+                    &nbsp; | &nbsp;
+                    Maximum file size: 10 MB
+
+                </small>
+
+
+            </label>
+
+
+
+            <div class="upload-action-row">
+
+
+                <div>
+
+                    Raw telemetry is preserved inside
+
+                    <code>
+                        data/raw/
+                    </code>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+
+                    Upload & Analyze
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+
+        <!-- =================================================
+             PROCESSING PIPELINE
+             ================================================= -->
+
+        <div class="pipeline telemetry-pipeline">
+
+
+            <!-- UPLOAD -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis %}
+                        complete
+                    {% else %}
+                        pending
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    01
+                </span>
+
+                <strong>
+                    UPLOAD
+                </strong>
+
+            </div>
+
+
+
+            <!-- VALIDATION -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis %}
+                        complete
+                    {% else %}
+                        pending
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    02
+                </span>
+
+                <strong>
+                    VALIDATION
+                </strong>
+
+            </div>
+
+
+
+            <!-- PARSING -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis and latest_analysis.status == 'Parsed' %}
+                        complete
+
+                    {% elif latest_analysis %}
+                        failed
+
+                    {% else %}
+                        pending
+
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    03
+                </span>
+
+                <strong>
+                    PARSING
+                </strong>
+
+            </div>
+
+
+
+            <!-- NORMALIZATION -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis and latest_analysis.normalization_status == 'Normalized' %}
+                        complete
+
+                    {% elif latest_analysis and latest_analysis.normalization_status == 'Failed' %}
+                        failed
+
+                    {% else %}
+                        pending
+
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    04
+                </span>
+
+                <strong>
+                    NORMALIZATION
+                </strong>
+
+            </div>
+
+
+
+            <!-- DETECTION -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis and latest_analysis.detection_status == 'Completed' %}
+                        complete
+
+                    {% elif latest_analysis and latest_analysis.detection_status == 'Failed' %}
+                        failed
+
+                    {% else %}
+                        pending
+
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    05
+                </span>
+
+                <strong>
+                    DETECTION
+                </strong>
+
+            </div>
+
+
+
+            <!-- IOC EXTRACTION -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis and latest_analysis.ioc_status == 'Completed' %}
+                        complete
+
+                    {% elif latest_analysis and latest_analysis.ioc_status == 'Failed' %}
+                        failed
+
+                    {% else %}
+                        pending
+
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    06
+                </span>
+
+                <strong>
+                    IOC EXTRACTION
+                </strong>
+
+            </div>
+
+
+
+            <!-- RESULTS -->
+
+            <div
+                class="
+                    pipeline-step
+
+                    {% if latest_analysis and latest_analysis.ioc_status == 'Completed' %}
+                        complete
+                    {% else %}
+                        pending
+                    {% endif %}
+                "
+            >
+
+                <span>
+                    07
+                </span>
+
+                <strong>
+                    RESULTS
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+    </article>
+
+
+
+    <!-- =================================================
+         CAPABILITY PANEL
+         ================================================= -->
+
+    <aside class="panel module-side">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    PIPELINE STATUS
+                </small>
+
+                <h2>
+                    Current capabilities
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="readiness-list">
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    File Upload
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    CSV / JSON Parsing
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    Normalization
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    Detection Engine
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    IOC Extraction
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Incident Investigation
+                </b>
+
+                <small>
+                    Next
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     LATEST TELEMETRY ANALYSIS
+     ===================================================== -->
+
+{% if latest_analysis %}
+
+
+<section class="panel telemetry-analysis">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+            <small>
+                LATEST ANALYSIS
+            </small>
+
+            <h2>
+                {{ latest_analysis.original_name }}
+            </h2>
+
+        </div>
+
+
+
+        {% if latest_analysis.status == "Parsed" %}
+
+        <span class="analysis-status analysis-status-success">
+
+            PARSED
+
+        </span>
+
+        {% else %}
+
+        <span class="analysis-status analysis-status-error">
+
+            PARSE FAILED
+
+        </span>
+
+        {% endif %}
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         ANALYSIS METRICS
+         ================================================= -->
+
+    <div class="analysis-metrics">
+
+
+        <div class="analysis-metric">
+
+            <span>
+                EVENTS
+            </span>
+
+            <strong>
+                {{ latest_analysis.event_count or 0 }}
+            </strong>
+
+        </div>
+
+
+
+        <div class="analysis-metric">
+
+            <span>
+                FIELDS
+            </span>
+
+            <strong>
+                {{ latest_analysis.field_count or 0 }}
+            </strong>
+
+        </div>
+
+
+
+        <div class="analysis-metric">
+
+            <span>
+                DETECTIONS
+            </span>
+
+            <strong>
+                {{ latest_analysis.detection_count or 0 }}
+            </strong>
+
+        </div>
+
+
+
+        <div class="analysis-metric">
+
+            <span>
+                IOCS
+            </span>
+
+            <strong>
+                {{ latest_analysis.ioc_count or 0 }}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         PROCESS STATUS
+         ================================================= -->
+
+    <div class="analysis-section">
+
+
+        <div class="analysis-section-head">
+
+            <div>
+
+                <small>
+                    PROCESSING STATUS
+                </small>
+
+                <h3>
+                    Pipeline result
+                </h3>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="field-chip-list">
+
+
+            <span class="field-chip">
+
+                Parsing:
+                {{ latest_analysis.status }}
+
+            </span>
+
+
+            <span class="field-chip">
+
+                Normalization:
+                {{ latest_analysis.normalization_status }}
+
+            </span>
+
+
+            <span class="field-chip">
+
+                Detection:
+                {{ latest_analysis.detection_status }}
+
+            </span>
+
+
+            <span class="field-chip">
+
+                IOC:
+                {{ latest_analysis.ioc_status }}
+
+            </span>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =================================================
+         NORMALIZED FIELDS
+         ================================================= -->
+
+    {% if latest_analysis.normalized_fields %}
+
+
+    <div class="analysis-section">
+
+
+        <div class="analysis-section-head">
+
+
+            <div>
+
+                <small>
+                    NORMALIZED SCHEMA
+                </small>
+
+                <h3>
+                    AegisTrace standard fields
+                </h3>
+
+            </div>
+
+
+            <span>
+
+                {{ latest_analysis.normalized_fields | length }}
+                fields
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="field-chip-list">
+
+
+            {% for field in latest_analysis.normalized_fields %}
+
+            <span class="field-chip">
+
+                {{ field }}
+
+            </span>
+
+            {% endfor %}
+
+
+        </div>
+
+
+    </div>
+
+
+    {% endif %}
+
+
+
+    <!-- =================================================
+         NORMALIZED EVENT PREVIEW
+         ================================================= -->
+
+    {% if latest_analysis.normalized_preview %}
+
+
+    <div class="analysis-section">
+
+
+        <div class="analysis-section-head">
+
+
+            <div>
+
+                <small>
+                    NORMALIZED DATA
+                </small>
+
+                <h3>
+                    Event preview
+                </h3>
+
+            </div>
+
+
+            <span>
+                First 5 events
+            </span>
+
+
+        </div>
+
+
+
+        <div class="table-wrap telemetry-preview-table">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Timestamp
+                        </th>
+
+                        <th>
+                            Event ID
+                        </th>
+
+                        <th>
+                            Host
+                        </th>
+
+                        <th>
+                            User
+                        </th>
+
+                        <th>
+                            Source IP
+                        </th>
+
+                        <th>
+                            Destination IP
+                        </th>
+
+                        <th>
+                            Process
+                        </th>
+
+                        <th>
+                            Command Line
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    {% for event in latest_analysis.normalized_preview %}
+
+
+                    <tr>
+
+                        <td>
+
+                            {{ event.get("timestamp") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("event_id") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("host") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("user") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("source_ip") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("destination_ip") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("process_name") or "—" }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ event.get("command_line") or "—" }}
+
+                        </td>
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+    {% endif %}
+
+
+</section>
+
+
+{% endif %}
+
+
+
+<!-- =====================================================
+     RECENT TELEMETRY UPLOADS
+     ===================================================== -->
+
+<section class="panel telemetry-history">
+
+
+    <div class="panel-head">
+
+        <div>
+
+            <small>
+                INGESTION HISTORY
+            </small>
+
+            <h2>
+                Recent telemetry uploads
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Last 10 uploads
+
+        </span>
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        File
+                    </th>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Events
+                    </th>
+
+                    <th>
+                        Fields
+                    </th>
+
+                    <th>
+                        Detections
+                    </th>
+
+                    <th>
+                        IOCs
+                    </th>
+
+                    <th>
+                        Detection
+                    </th>
+
+                    <th>
+                        IOC Status
+                    </th>
+
+                    <th>
+                        Uploaded By
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if recent_uploads %}
+
+
+                    {% for upload in recent_uploads %}
+
+
+                    <tr>
+
+
+                        <td class="file-name-cell">
+
+                            {{ upload["original_name"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["file_type"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["event_count"] or 0 }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["field_count"] or 0 }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["detection_count"] or 0 }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["ioc_count"] or 0 }}
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if upload["detection_status"] == "Completed" %}
+
+                            <span class="upload-status upload-status-success">
+
+                                Completed
+
+                            </span>
+
+
+                            {% elif upload["detection_status"] == "Failed" %}
+
+                            <span class="upload-status upload-status-error">
+
+                                Failed
+
+                            </span>
+
+
+                            {% else %}
+
+                            <span class="upload-status">
+
+                                Pending
+
+                            </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if upload["ioc_status"] == "Completed" %}
+
+                            <span class="upload-status upload-status-success">
+
+                                Completed
+
+                            </span>
+
+
+                            {% elif upload["ioc_status"] == "Failed" %}
+
+                            <span class="upload-status upload-status-error">
+
+                                Failed
+
+                            </span>
+
+
+                            {% else %}
+
+                            <span class="upload-status">
+
+                                Pending
+
+                            </span>
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td>
+
+                            {{ upload["uploaded_by"] or "Unknown" }}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr class="empty-row">
+
+
+                    <td colspan="9">
+
+                        No telemetry uploaded yet.
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     DETECTION MODULE
+     ===================================================== -->
+
+{% elif active_module == "detection" %}
+
+
+{% set stats = namespace(
+    total=0,
+    high=0,
+    medium=0,
+    low=0,
+    open=0
+) %}
+
+
+{% for detection in detections %}
+
+    {% set stats.total = stats.total + 1 %}
+
+    {% if detection["severity"] == "High" %}
+
+        {% set stats.high = stats.high + 1 %}
+
+    {% elif detection["severity"] == "Medium" %}
+
+        {% set stats.medium = stats.medium + 1 %}
+
+    {% elif detection["severity"] == "Low" %}
+
+        {% set stats.low = stats.low + 1 %}
+
+    {% endif %}
+
+
+    {% if detection["status"] == "Open" %}
+
+        {% set stats.open = stats.open + 1 %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+
+<!-- =====================================================
+     DETECTION SUMMARY
+     ===================================================== -->
+
+<section class="detection-summary">
+
+
+    <div class="detection-stat">
+
+        <span>
+            TOTAL DETECTIONS
+        </span>
+
+        <strong>
+            {{ stats.total }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat severity-high">
+
+        <span>
+            HIGH
+        </span>
+
+        <strong>
+            {{ stats.high }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat severity-medium">
+
+        <span>
+            MEDIUM
+        </span>
+
+        <strong>
+            {{ stats.medium }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat">
+
+        <span>
+            OPEN FINDINGS
+        </span>
+
+        <strong>
+            {{ stats.open }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     DETECTION FEED
+     ===================================================== -->
+
+<section class="panel detection-feed">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+            <small>
+                DETECTION ENGINE
+            </small>
+
+            <h2>
+                Detection feed
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Real findings generated from telemetry
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="detection-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Severity
+                    </th>
+
+                    <th>
+                        Detection
+                    </th>
+
+                    <th>
+                        Rule ID
+                    </th>
+
+                    <th>
+                        MITRE
+                    </th>
+
+                    <th>
+                        Host
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Source IP
+                    </th>
+
+                    <th>
+                        Event ID
+                    </th>
+
+                    <th>
+                        Source File
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Detected
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if detections %}
+
+
+                    {% for detection in detections %}
+
+
+                    <tr>
+
+
+                        <td>
+
+
+                            {% if detection["severity"] == "High" %}
+
+
+                            <span class="severity-badge severity-badge-high">
+
+                                HIGH
+
+                            </span>
+
+
+                            {% elif detection["severity"] == "Medium" %}
+
+
+                            <span class="severity-badge severity-badge-medium">
+
+                                MEDIUM
+
+                            </span>
+
+
+                            {% else %}
+
+
+                            <span class="severity-badge">
+
+                                {{ detection["severity"] }}
+
+                            </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <td class="detection-name">
+
+
+                            <strong>
+
+                                {{ detection["rule_name"] }}
+
+                            </strong>
+
+
+                            <span>
+
+                                {{ detection["description"] }}
+
+                            </span>
+
+
+                        </td>
+
+
+
+                        <td>
+
+                            <code>
+
+                                {{ detection["rule_id"] }}
+
+                            </code>
+
+                        </td>
+
+
+
+                        <td>
+
+
+                            {% if detection["mitre_technique"] %}
+
+
+                            <span class="mitre-badge">
+
+                                {{ detection["mitre_technique"] }}
+
+                            </span>
+
+
+                            {% else %}
+
+                            —
+
+                            {% endif %}
+
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["host"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["username"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["source_ip"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["event_id"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["original_name"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            <span class="open-badge">
+
+                                {{ detection["status"] }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ detection["detected_at"] }}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr class="empty-row">
+
+
+                    <td colspan="11">
+
+
+                        <div class="detection-empty">
+
+
+                            <strong>
+
+                                No detections generated yet
+
+                            </strong>
+
+
+                            <p>
+
+                                Upload telemetry containing
+                                suspicious activity.
+                                AegisTrace only creates findings
+                                when an event matches a detection rule.
+
+                            </p>
+
+
+                            <a
+                                class="primary-btn"
+                                href="{{ url_for('module_page', module_name='telemetry') }}"
+                            >
+
+                                Upload Telemetry
+
+                            </a>
+
+
+                        </div>
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     INVESTIGATION / IOC MODULE
+     ===================================================== -->
+
+{% elif active_module == "investigation" %}
+
+
+{% set iocstats = namespace(
+    total=0,
+    ip=0,
+    domain=0,
+    url=0,
+    hash=0
+) %}
+
+
+{% for ioc in iocs %}
+
+    {% set iocstats.total = iocstats.total + 1 %}
+
+
+    {% if ioc["ioc_type"] == "IP" %}
+
+        {% set iocstats.ip = iocstats.ip + 1 %}
+
+
+    {% elif ioc["ioc_type"] == "DOMAIN" %}
+
+        {% set iocstats.domain = iocstats.domain + 1 %}
+
+
+    {% elif ioc["ioc_type"] == "URL" %}
+
+        {% set iocstats.url = iocstats.url + 1 %}
+
+
+    {% elif ioc["ioc_type"] in ["MD5", "SHA1", "SHA256"] %}
+
+        {% set iocstats.hash = iocstats.hash + 1 %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+
+<!-- =====================================================
+     IOC SUMMARY
+     ===================================================== -->
+
+<section class="detection-summary">
+
+
+    <div class="detection-stat">
+
+        <span>
+            TOTAL IOCS
+        </span>
+
+        <strong>
+            {{ iocstats.total }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat">
+
+        <span>
+            IP ADDRESSES
+        </span>
+
+        <strong>
+            {{ iocstats.ip }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat">
+
+        <span>
+            DOMAINS / URLS
+        </span>
+
+        <strong>
+            {{ iocstats.domain + iocstats.url }}
+        </strong>
+
+    </div>
+
+
+
+    <div class="detection-stat">
+
+        <span>
+            HASHES
+        </span>
+
+        <strong>
+            {{ iocstats.hash }}
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     IOC INTELLIGENCE
+     ===================================================== -->
+
+<section class="panel detection-feed">
+
+
+    <div class="panel-head">
+
+
+        <div>
+
+            <small>
+                IOC INTELLIGENCE
+            </small>
+
+            <h2>
+                Extracted indicators
+            </h2>
+
+        </div>
+
+
+        <span class="panel-meta">
+
+            Observed from uploaded telemetry
+
+        </span>
+
+
+    </div>
+
+
+
+    <div class="table-wrap">
+
+
+        <table class="detection-table">
+
+
+            <thead>
+
+
+                <tr>
+
+                    <th>
+                        Type
+                    </th>
+
+                    <th>
+                        Indicator
+                    </th>
+
+                    <th>
+                        Source Field
+                    </th>
+
+                    <th>
+                        Host
+                    </th>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Source File
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Extracted
+                    </th>
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                {% if iocs %}
+
+
+                    {% for ioc in iocs %}
+
+
+                    <tr>
+
+
+                        <td>
+
+                            <span class="ioc-type-badge">
+
+                                {{ ioc["ioc_type"] }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <td class="ioc-value">
+
+                            {{ ioc["ioc_value"] }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ ioc["source_field"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ ioc["host"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ ioc["username"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ ioc["original_name"] or "—" }}
+
+                        </td>
+
+
+
+                        <td>
+
+                            <span class="observed-badge">
+
+                                {{ ioc["status"] }}
+
+                            </span>
+
+                        </td>
+
+
+
+                        <td>
+
+                            {{ ioc["extracted_at"] }}
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                <tr class="empty-row">
+
+
+                    <td colspan="8">
+
+
+                        <div class="detection-empty">
+
+
+                            <strong>
+
+                                No IOCs extracted yet
+
+                            </strong>
+
+
+                            <p>
+
+                                Upload telemetry containing IP addresses,
+                                URLs, domains or hashes.
+                                AegisTrace will extract the indicators
+                                automatically.
+
+                            </p>
+
+
+                            <a
+                                class="primary-btn"
+                                href="{{ url_for('module_page', module_name='telemetry') }}"
+                            >
+
+                                Upload Telemetry
+
+                            </a>
+
+
+                        </div>
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endif %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     RESPONSE MODULE
+     ===================================================== -->
+
+{% elif active_module == "response" %}
+
+
+<section class="module-shell">
+
+
+    <article class="panel module-main">
+
+
+        <div class="panel-head">
+
+
+            <div>
+
+                <small>
+                    INCIDENT RESPONSE
+                </small>
+
+                <h2>
+                    Response workspace
+                </h2>
+
+            </div>
+
+
+            <span class="status-badge neutral">
+
+                Coming next
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="module-empty">
+
+
+            <div class="module-symbol">
+
+                RS
+
+            </div>
+
+
+            <strong>
+
+                Response actions are not connected yet.
+
+            </strong>
+
+
+            <p>
+
+                This module will contain recommended actions,
+                blocklist controls, playbooks and action history.
+
+            </p>
+
+
+        </div>
+
+
+    </article>
+
+
+
+    <aside class="panel module-side">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    RESPONSE READINESS
+                </small>
+
+                <h2>
+                    Capabilities
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="readiness-list">
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Recommended Actions
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Blocklist
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Playbooks
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     REPORTS MODULE
+     ===================================================== -->
+
+{% elif active_module == "reports" %}
+
+
+<section class="module-shell">
+
+
+    <article class="panel module-main">
+
+
+        <div class="panel-head">
+
+
+            <div>
+
+                <small>
+                    REPORTING
+                </small>
+
+                <h2>
+                    Security reports
+                </h2>
+
+            </div>
+
+
+            <span class="status-badge neutral">
+
+                Coming later
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="module-empty">
+
+
+            <div class="module-symbol">
+
+                RP
+
+            </div>
+
+
+            <strong>
+
+                Report generation is not connected yet.
+
+            </strong>
+
+
+            <p>
+
+                Incident, threat hunt, IOC, ATT&CK coverage,
+                methodology and executive reports will appear here.
+
+            </p>
+
+
+        </div>
+
+
+    </article>
+
+
+
+    <aside class="panel module-side">
+
+
+        <div class="panel-head">
+
+            <div>
+
+                <small>
+                    REPORT READINESS
+                </small>
+
+                <h2>
+                    Deliverables
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="readiness-list">
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Incident Reports
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    IOC Reports
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Executive Summary
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+</section>
+
+
+
+<!-- =====================================================
+     OTHER / FALLBACK MODULE
+     ===================================================== -->
+
+{% else %}
+
+
+<section class="module-shell">
+
+
+    <article class="panel module-main">
+
+
+        <div class="panel-head">
+
+
+            <div>
+
+                <small>
+                    WORKSPACE
+                </small>
+
+                <h2>
+                    {{ module.title }}
+                </h2>
+
+            </div>
+
+
+            <span class="status-badge neutral">
+
+                Awaiting configuration
+
+            </span>
+
+
+        </div>
+
+
+
+        <div class="module-empty">
+
+
+            <div class="module-symbol">
+
+                {{ module.short[:2].upper() }}
+
+            </div>
+
+
+            <strong>
+
+                Module awaiting data / configuration.
+
+            </strong>
+
+
+            <p>
+
+                This workspace is ready for backend
+                functionality to be connected later.
+
+            </p>
+
+
+        </div>
+
+
+    </article>
+
+
+
+    <aside class="panel module-side">
+
+
+        <div class="panel-head">
+
+
+            <div>
+
+                <small>
+                    PROJECT STATUS
+                </small>
+
+                <h2>
+                    Workspace readiness
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="readiness-list">
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    Professional layout
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot done"></span>
+
+                <b>
+                    Authentication
+                </b>
+
+                <small>
+                    Ready
+                </small>
+
+            </div>
+
+
+
+            <div>
+
+                <span class="ready-dot pending"></span>
+
+                <b>
+                    Module backend
+                </b>
+
+                <small>
+                    Pending
+                </small>
+
+            </div>
+
+
+        </div>
+
+
+    </aside>
+
+
+</section>
+
+
+{% endif %}
+
+
+{% endblock %}

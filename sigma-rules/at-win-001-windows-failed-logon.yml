@@ -1,0 +1,15 @@
+title: Windows Failed Logon
+id: AT-WIN-001
+status: experimental
+description: AegisTrace academic detection specification for Windows Failed Logon.
+author: AegisTrace Project
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+  condition: selection
+level: medium
+tags:
+  - attack.t1110

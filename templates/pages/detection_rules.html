@@ -1,0 +1,5 @@
+{% extends "layout/base.html" %}{% block title %}Sigma Rules | AegisTrace{% endblock %}{% block content %}
+<section class="workspace-head"><div><small>DETECTION / RULE LIBRARY</small><h1>Sigma-Style Rule Library</h1><p>{{ rule_count }} configured AegisTrace rules mapped to {{ technique_count }} ATT&CK techniques. YAML specifications are also stored in the sigma-rules folder.</p></div></section>
+<div class="notice-box">The web application executes Python equivalents of these rule specifications. YAML files are included for documentation and academic review; AegisTrace does not claim to be a full generic Sigma compiler.</div>
+<section class="rule-grid" style="margin-top:16px">{% for r in rules %}<article class="rule-card"><small>{{ r['rule_id'] }}</small><h3>{{ r['name'] }}</h3><div class="rule-meta"><span class="badge badge-{{ r['severity']|lower }}">{{ r['severity'] }}</span><span class="badge">{{ r['mitre'] }}</span><span class="badge">{{ r['category'] }}</span></div><p>{{ r['technique'] }}</p></article>{% endfor %}</section>
+{% endblock %}
